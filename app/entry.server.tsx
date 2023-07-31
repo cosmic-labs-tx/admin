@@ -95,6 +95,7 @@ function handleBrowserRequest(
           const body = new PassThrough();
 
           responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set("Access-Control-Allow-Origin", "*");
 
           resolve(
             new Response(body, {

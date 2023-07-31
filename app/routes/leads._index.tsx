@@ -11,7 +11,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -21,7 +20,7 @@ import {
 import { prisma } from "~/db.server";
 
 export const loader = async () => {
-  const leads = await prisma.lead.findMany();
+  const leads = await prisma.lead.findMany({ orderBy: { createdAt: "desc" } });
   return json({ leads });
 };
 
@@ -29,10 +28,12 @@ export default function LeadIndexPage() {
   const { leads } = useLoaderData<typeof loader>();
   return (
     <Table>
-      <TableCaption>Leads. Ordered by most recently created.</TableCaption>
+      {/* <TableCaption>Leads. Ordered by most recently created.</TableCaption> */}
       <TableHeader>
         <TableRow>
+          <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
+          <TableHead>Company</TableHead>
           <TableHead>Last Updated</TableHead>
           <TableHead>Created</TableHead>
           <TableHead>Actions</TableHead>
@@ -42,7 +43,9 @@ export default function LeadIndexPage() {
         {leads.map((lead) => {
           return (
             <TableRow key={lead.id}>
+              <TableCell>{lead.name}</TableCell>
               <TableCell>{lead.email}</TableCell>
+              <TableCell>{lead.company}</TableCell>
               <TableCell>{new Date(lead.updatedAt).toLocaleString()}</TableCell>
               <TableCell>{new Date(lead.createdAt).toLocaleString()}</TableCell>
               <TableCell>
