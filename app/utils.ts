@@ -69,3 +69,11 @@ export function useUser(): User {
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
+
+// Takes a value like MY_ENUM_VALUE and returns My Enum Value
+export function normalizeEnum(value: string) {
+  return value
+    .split("_")
+    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}

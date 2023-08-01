@@ -2,6 +2,7 @@ import { Link, NavLink } from "@remix-run/react";
 import type { ComponentPropsWithoutRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { cn } from "~/lib/utils";
+import { useOptionalUser } from "~/utils";
 
 const links = [
   { name: "Dashboard", href: "/" },
@@ -9,6 +10,9 @@ const links = [
 ];
 
 export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
+  const user = useOptionalUser();
+  if (!user) return null;
+
   return (
     <nav
       className={cn(
@@ -19,7 +23,10 @@ export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
       <div className="pl-3">
         <Link to="/" className="flex items-center space-x-2">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage
+              src="https://github.com/paulhmorris.png"
+              alt="@paulhmorris"
+            />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </Link>

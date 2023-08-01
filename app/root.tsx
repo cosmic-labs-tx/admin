@@ -9,7 +9,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { SideNav } from "~/components/side-nav";
 
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
@@ -25,15 +24,14 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full min-h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body className="flex h-full">
-        <SideNav />
+      <body className="h-full">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

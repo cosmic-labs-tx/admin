@@ -2,51 +2,58 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
+  Link,
   isRouteErrorResponse,
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { Button } from "~/components/ui/button";
+import { prisma } from "~/db.server";
 
-import { deleteNote, getNote } from "~/models/note.server";
+import { deleteNote } from "~/models/note.server";
 import { requireUserId } from "~/session.server";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  const userId = await requireUserId(request);
-  invariant(params.noteId, "noteId not found");
+  await requireUserId(request);
+  invariant(params.leadId, "leadId not found");
 
-  const note = await getNote({ id: params.noteId, userId });
-  if (!note) {
+  const lead = await prisma.lead.findUnique({ where: { id: params.leadId } });
+  if (!lead) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json({ note });
+  return json({ lead });
 };
 
 export const action = async ({ params, request }: ActionArgs) => {
   const userId = await requireUserId(request);
-  invariant(params.noteId, "noteId not found");
+  invariant(params.leadId, "leadId not found");
 
-  await deleteNote({ id: params.noteId, userId });
+  await deleteNote({ id: params.leadId, userId });
 
   return redirect("/notes");
 };
 
 export default function NoteDetailsPage() {
-  const data = useLoaderData<typeof loader>();
+  const { lead } = useLoaderData<typeof loader>();
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.note.title}</h3>
-      <p className="py-6">{data.note.body}</p>
+      <div className="flex gap-2">
+        <Button asChild>
+          <Link to={`/leads/${lead.id}/edit`}>Edit</Link>
+        </Button>
+        <Form method="post">
+          <Button variant="destructive" type="submit">
+            Delete
+          </Button>
+        </Form>
+      </div>
+      <h3 className="text-2xl font-bold">{lead.name}</h3>
+      <p className="py-6">{lead.email}</p>
+      <p className="py-6">{lead.phone}</p>
+      <p className="py-6">{lead.budget}</p>
       <hr className="my-4" />
-      <Form method="post">
-        <button
-          type="submit"
-          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-        >
-          Delete
-        </button>
-      </Form>
     </div>
   );
 }
