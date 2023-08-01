@@ -1,6 +1,7 @@
-import { Link, NavLink } from "@remix-run/react";
+import { Form, Link, NavLink } from "@remix-run/react";
 import type { ComponentPropsWithoutRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { useOptionalUser } from "~/utils";
 
@@ -16,7 +17,7 @@ export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
   return (
     <nav
       className={cn(
-        "flex shrink-0 grow-0 basis-72 space-x-2 border-r border-slate-300 px-6 pt-10 lg:flex-col",
+        "flex shrink-0 grow-0 basis-72 space-x-2 border-r border-slate-300 px-6 py-10 lg:flex-col",
         props.className
       )}
     >
@@ -48,6 +49,13 @@ export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
           </li>
         ))}
       </ul>
+      <div className="mt-auto">
+        <Form method="post" action="/logout">
+          <Button type="submit" variant="ghost">
+            Log out
+          </Button>
+        </Form>
+      </div>
     </nav>
   );
 }

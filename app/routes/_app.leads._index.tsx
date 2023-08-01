@@ -1,4 +1,4 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { PageHeader } from "~/components/page-header";
@@ -21,13 +21,15 @@ import {
 } from "~/components/ui/table";
 
 import { prisma } from "~/db.server";
+import { requireUserId } from "~/session.server";
 
 export const meta: V2_MetaFunction = () => [{ title: "Leads • FBL" }];
 
-export const loader = async () => {
+export async function loader({ request }: LoaderArgs) {
+  await requireUserId(request);
   const leads = await prisma.lead.findMany({ orderBy: { createdAt: "desc" } });
   return json({ leads });
-};
+}
 
 export default function LeadIndexPage() {
   const { leads } = useLoaderData<typeof loader>();
@@ -39,7 +41,6 @@ export default function LeadIndexPage() {
         </Button>
       </PageHeader>
       <Table>
-        {/* <TableCaption>Leads. Ordered by most recently created.</TableCaption> */}
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
