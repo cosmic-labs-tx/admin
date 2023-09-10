@@ -13,7 +13,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, name, label, ...props }, ref) => {
     const { error, getInputProps } = useField(name);
     return (
-      <div className="space-y-1">
+      <div className="w-full space-y-1">
         <Label htmlFor={name}>{label}</Label>
         <input
           type={type}

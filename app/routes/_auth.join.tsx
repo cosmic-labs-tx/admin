@@ -1,24 +1,25 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useSearchParams } from "@remix-run/react";
+import { Link, useSearchParams } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { z } from "zod";
-import { Checkbox } from "~/components/ui/checkbox";
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import { SubmitButton } from "~/components/ui/submit-button";
-import { verifyLogin } from "~/models/user.server";
+
+import { createUser } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
 const validator = withZod(
   z.object({
+    firstName: z.string().min(1, { message: "First name is required" }),
+    lastName: z.string().optional(),
     email: z.string().min(1, { message: "Email is required" }).email(),
     password: z
       .string()
       .min(8, { message: "Password must be 8 or more characters." }),
-    remember: z.literal("on").optional(),
     redirectTo: z.string().optional(),
   })
 );
@@ -34,47 +35,57 @@ export const action = async ({ request }: ActionArgs) => {
 
   if (result.error) return validationError(result.error);
 
-  const { email, password, remember, redirectTo } = result.data;
-  const user = await verifyLogin(email, password);
+  const { redirectTo, ...rest } = result.data;
 
-  if (!user) {
-    return validationError({
-      fieldErrors: {
-        email: "Email or password is incorrect",
-      },
-    });
-  }
+  const user = await createUser({
+    ...rest,
+    role: "CLIENT",
+  });
 
   return createUserSession({
     request,
+    remember: false,
     userId: user.id,
     redirectTo: safeRedirect(redirectTo, "/"),
-    remember: remember === "on" ? true : false,
   });
 };
 
-export const meta: V2_MetaFunction = () => [{ title: "Login" }];
+export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];
 
-export default function LoginPage() {
+export default function Join() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/leads";
+  const redirectTo = searchParams.get("redirectTo") ?? undefined;
 
   return (
     <div className="grid h-full place-items-center">
       <div className="max-w-lg px-8">
-        <h1 className="text-4xl font-extrabold">Friendly Bear Labs Admin</h1>
+        <h1 className="text-4xl font-extrabold">Create an Account</h1>
         <ValidatedForm
           validator={validator}
           method="post"
           className="mt-8 space-y-3"
         >
+          <div className="flex w-full gap-3">
+            <Input
+              label="First Name"
+              id="firstName"
+              name="firstName"
+              autoComplete="given-name"
+              required
+            />
+            <Input
+              label="Last Name"
+              id="lastName"
+              name="lastName"
+              autoComplete="family-name"
+            />
+          </div>
           <Input
             label="Email"
             id="email"
             name="email"
             type="email"
             autoComplete="email"
-            defaultValue="paul@remix.run"
             required
           />
           <Input
@@ -82,20 +93,16 @@ export default function LoginPage() {
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
-            defaultValue="pauliscool"
+            autoComplete="new-password"
             required
           />
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="remember" name="remember" />
-              <Label htmlFor="remember">Remember me</Label>
-            </div>
-          </div>
-          <SubmitButton className="w-full">Log in</SubmitButton>
+          <SubmitButton className="w-full">Create Account</SubmitButton>
         </ValidatedForm>
+        <Button variant="link" asChild>
+          <Link to="/login">Already have an account?</Link>
+        </Button>
       </div>
     </div>
   );

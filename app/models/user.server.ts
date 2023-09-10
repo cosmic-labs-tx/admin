@@ -1,4 +1,4 @@
-import type { Password, User } from "@prisma/client";
+import type { Password, Prisma, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -16,19 +16,14 @@ export async function getUserByEmail(email: User["email"]) {
 }
 
 export async function createUser(
-  email: User["email"],
-  password: string,
-  firstName: string,
-  clientId: string
+  data: Prisma.UserUncheckedCreateInput & { password: Password["hash"] }
 ) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const { password, ...rest } = data;
+  const hashedPassword = await bcrypt.hash(data.password, 10);
 
   return prisma.user.create({
     data: {
-      email,
-      firstName,
-      clientId,
-      role: "CLIENT",
+      ...rest,
       password: {
         create: {
           hash: hashedPassword,
@@ -48,9 +43,7 @@ export async function verifyLogin(
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
-    include: {
-      password: true,
-    },
+    include: { password: true },
   });
 
   if (!userWithPassword || !userWithPassword.password) {

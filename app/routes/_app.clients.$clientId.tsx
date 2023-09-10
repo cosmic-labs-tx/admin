@@ -120,7 +120,7 @@ export function ErrorBoundary() {
   }
 
   if (error.status === 404) {
-    return <div>Note not found</div>;
+    return <div>Client not found</div>;
   }
 
   return <div>An unexpected error occurred: {error.statusText}</div>;

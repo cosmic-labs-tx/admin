@@ -1,6 +1,6 @@
 import { Attribution } from "@prisma/client";
 import type { ActionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { z } from "zod";
@@ -11,7 +11,7 @@ import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { prisma } from "~/db.server";
 
-import { requireUserId } from "~/session.server";
+import { requireAdmin } from "~/session.server";
 
 const validator = withZod(
   z.object({
@@ -27,12 +27,10 @@ const validator = withZod(
 );
 
 export const action = async ({ request }: ActionArgs) => {
-  await requireUserId(request);
+  await requireAdmin(request);
 
   const result = await validator.validate(await request.formData());
-  if (result.error) {
-    return json(validationError(result.error), { status: 400 });
-  }
+  if (result.error) return validationError(result.error);
 
   const lead = await prisma.lead.create({ data: result.data });
   return redirect(`/leads/${lead.id}`);
@@ -75,8 +73,8 @@ export default function NewLeadPage() {
           type="text"
         />
         <div className="flex flex-col gap-2 sm:flex-row">
-          <SubmitButton size="lg">Create Lead</SubmitButton>
-          <Button variant="outline" size="lg" type="reset">
+          <SubmitButton>Create Lead</SubmitButton>
+          <Button variant="outline" type="reset">
             Reset
           </Button>
         </div>
