@@ -21,7 +21,7 @@ const schema = zfd.formData({
       "GOOGLE",
       "REFERRAL",
       "OTHER",
-    ])
+    ]),
   ),
   message: zfd.text(z.string().optional()),
   budget: zfd.text(z.string().optional()),

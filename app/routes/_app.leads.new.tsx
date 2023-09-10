@@ -1,6 +1,7 @@
 import { Attribution } from "@prisma/client";
 import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import type { V2_MetaFunction } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { z } from "zod";
@@ -23,8 +24,10 @@ const validator = withZod(
     clientId: z.string().min(1, { message: "Client is required" }),
     attribution: z.nativeEnum(Attribution),
     attributionNote: z.string(),
-  })
+  }),
 );
+
+export const meta: V2_MetaFunction = () => [{ title: "New Lead • FBL" }];
 
 export const action = async ({ request }: ActionArgs) => {
   await requireAdmin(request);

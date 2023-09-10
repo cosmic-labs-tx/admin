@@ -1,5 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import type { V2_MetaFunction } from "@remix-run/react";
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -14,6 +15,8 @@ import { cn } from "~/lib/utils";
 import { deleteLead } from "~/models/lead.server";
 import { requireUser } from "~/session.server";
 import { normalizeEnum } from "~/utils";
+
+export const meta: V2_MetaFunction = () => [{ title: "Lead • FBL" }];
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const user = await requireUser(request);
@@ -49,7 +52,7 @@ export const action = async ({ params, request }: ActionArgs) => {
   return redirect("/leads");
 };
 
-export default function NoteDetailsPage() {
+export default function LeadDetailsPage() {
   const { lead } = useLoaderData<typeof loader>();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -130,7 +133,7 @@ function DetailItem({
       <dd
         className={cn(
           "mt-1 text-sm sm:col-span-2 sm:mt-0",
-          value ? "" : "text-muted-foreground"
+          value ? "" : "text-muted-foreground",
         )}
       >
         {value ?? "N/A"}

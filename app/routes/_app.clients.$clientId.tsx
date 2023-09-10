@@ -1,7 +1,9 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import type { V2_MetaFunction } from "@remix-run/react";
+import { Link, isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
+import { IconChevronRight } from "@tabler/icons-react";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
@@ -15,13 +17,16 @@ import { Input } from "~/components/ui/input";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { prisma } from "~/db.server";
 import { requireAdmin } from "~/session.server";
+import { normalizeEnum } from "~/utils";
 
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
     _action: z.enum(["delete", "update"]),
-  })
+  }),
 );
+
+export const meta: V2_MetaFunction = () => [{ title: "Client • FBL" }];
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   await requireAdmin(request);
@@ -29,11 +34,10 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
   const client = await prisma.client.findUnique({
     where: { id: params.clientId },
-    include: { leads: true },
+    include: { leads: true, users: true },
   });
-  if (!client) {
-    throw notFound({ message: "Client not found" });
-  }
+
+  if (!client) throw notFound({ message: "Client not found" });
 
   return typedjson({ client });
 };
@@ -67,7 +71,7 @@ export const action = async ({ params, request }: ActionArgs) => {
   return json({ client: updatedClient });
 };
 
-export default function NoteDetailsPage() {
+export default function ClientDetailsPage() {
   const { client } = useTypedLoaderData<typeof loader>();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -96,7 +100,47 @@ export default function NoteDetailsPage() {
         </SubmitButton>
       </ValidatedForm>
 
-      <div className="mt-12">
+      <div className="mt-12 space-y-12">
+        <div>
+          <h2>Users</h2>
+          <ul className="divide-y divide-border max-w-md">
+            {client.users.map((user) => (
+              <li key={user.id}>
+                <Link
+                  to={`/users/${user.id}`}
+                  className="relative flex items-center space-x-4 py-4"
+                >
+                  <div className="min-w-0 flex-auto">
+                    <h2 className="min-w-0 text-sm font-semibold leading-6 text-white">
+                      <Link to={`/users/${user.id}`}>
+                        <span>
+                          {user.firstName}
+                          {user.lastName ? ` ${user.lastName}` : ""}
+                        </span>
+                      </Link>
+                    </h2>
+                    <div className="mt-1 flex items-center gap-x-2.5 text-xs leading-5 text-muted-foreground">
+                      <p className="truncate">{normalizeEnum(user.role)}</p>
+                      <svg
+                        viewBox="0 0 2 2"
+                        className="h-0.5 w-0.5 flex-none fill-gray-300"
+                      >
+                        <circle cx={1} cy={1} r={1} />
+                      </svg>
+                      <p className="whitespace-nowrap">
+                        Created {new Date(user.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <IconChevronRight
+                    className="h-5 w-5 flex-none text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
         <h2 className="mb-4">Leads</h2>
         <LeadsTable leads={client.leads} />
       </div>

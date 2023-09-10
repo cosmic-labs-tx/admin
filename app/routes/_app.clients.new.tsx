@@ -1,5 +1,6 @@
 import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import type { V2_MetaFunction } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { z } from "zod";
@@ -14,8 +15,10 @@ import { requireAdmin } from "~/session.server";
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
-  })
+  }),
 );
+
+export const meta: V2_MetaFunction = () => [{ title: "New Client • FBL" }];
 
 export const action = async ({ request }: ActionArgs) => {
   await requireAdmin(request);

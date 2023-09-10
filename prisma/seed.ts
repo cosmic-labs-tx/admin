@@ -46,7 +46,7 @@ async function seed() {
 
     await prisma.user.create({
       data: {
-        email: faker.internet.email(),
+        email: faker.internet.email().toLowerCase(),
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         role: "CLIENT",

@@ -21,7 +21,7 @@ const validator = withZod(
       .string()
       .min(8, { message: "Password must be 8 or more characters." }),
     redirectTo: z.string().optional(),
-  })
+  }),
 );
 
 export const loader = async ({ request }: LoaderArgs) => {

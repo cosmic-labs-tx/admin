@@ -12,8 +12,9 @@ const links: ReadonlyArray<{
   href: string;
   access: ReadonlyArray<Role>;
 }> = [
-  { name: "Clients", href: "/clients", access: ["ADMIN"] },
   { name: "Leads", href: "/leads", access: ["ADMIN", "CLIENT"] },
+  { name: "Clients", href: "/clients", access: ["ADMIN"] },
+  { name: "Users", href: "/users", access: ["ADMIN"] },
 ] as const;
 
 export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
@@ -23,7 +24,7 @@ export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
     <nav
       className={cn(
         "flex h-full shrink-0 grow-0 basis-56 flex-col space-x-2 border-r border-border bg-background px-6 py-10",
-        props.className
+        props.className,
       )}
     >
       <div className="pl-3">
@@ -48,7 +49,7 @@ export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
                   className={({ isActive }) =>
                     cn(
                       "flex items-center rounded-md px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary",
-                      isActive && "bg-secondary"
+                      isActive && "bg-secondary",
                     )
                   }
                 >
