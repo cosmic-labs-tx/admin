@@ -9,6 +9,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { ThemeProvider } from "~/components/theme-provider";
 
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
@@ -31,12 +32,14 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
-      </body>
+      <ThemeProvider>
+        <body className="h-full">
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </body>
+      </ThemeProvider>
     </html>
   );
 }

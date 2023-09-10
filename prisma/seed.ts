@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -13,9 +14,21 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash("pauliscool", 10);
 
-  const user = await prisma.user.create({
+  const client = await prisma.client.create({
+    data: {
+      name: "Friendly Bear Labs",
+    },
+  });
+
+  await prisma.user.create({
     data: {
       email,
+      firstName: "Paul",
+      lastName: "Henschel",
+      role: "ADMIN",
+      client: {
+        connect: { id: client.id },
+      },
       password: {
         create: {
           hash: hashedPassword,
@@ -24,21 +37,44 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
-    data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  for (let i = 0; i < 5; i++) {
+    const client = await prisma.client.create({
+      data: {
+        name: faker.company.name(),
+      },
+    });
 
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+    await prisma.user.create({
+      data: {
+        email: faker.internet.email(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        role: "CLIENT",
+        client: {
+          connect: { id: client.id },
+        },
+        password: {
+          create: {
+            hash: await bcrypt.hash("password", 10),
+          },
+        },
+      },
+    });
+
+    for (let i = 0; i < 20; i++) {
+      await prisma.lead.create({
+        data: {
+          attribution: "ORGANIC",
+          name: faker.person.fullName(),
+          email: faker.internet.email().toLowerCase(),
+          phone: faker.phone.number("###-###-####"),
+          client: {
+            connect: { id: client.id },
+          },
+        },
+      });
+    }
+  }
 
   console.log(`Database has been seeded. 🌱`);
 }

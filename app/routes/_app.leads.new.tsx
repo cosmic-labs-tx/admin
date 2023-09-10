@@ -20,6 +20,7 @@ const validator = withZod(
     phone: z.string(),
     company: z.string().min(1, { message: "Company is required" }),
     budget: z.string().min(1, { message: "Budget is required" }),
+    clientId: z.string().min(1, { message: "Client is required" }),
     attribution: z.nativeEnum(Attribution),
     attributionNote: z.string(),
   })

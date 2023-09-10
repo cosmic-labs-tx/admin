@@ -60,47 +60,51 @@ export const meta: V2_MetaFunction = () => [{ title: "Login" }];
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/";
+  const redirectTo = searchParams.get("redirectTo") || "/leads";
 
   return (
-    <div className="mx-auto h-full w-full max-w-lg px-8 pt-[25%]">
-      <h1 className="text-center  text-4xl font-extrabold md:text-5xl">
-        Friendly Bear Labs
-      </h1>
-      <ValidatedForm
-        validator={validator}
-        method="post"
-        className="mt-12 space-y-2"
-      >
-        <Input
-          label="Email"
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-        />
+    <div className="grid h-full place-items-center">
+      <div className="max-w-lg px-8">
+        <h1 className="text-center text-4xl font-extrabold md:text-5xl">
+          Friendly Bear Labs Admin
+        </h1>
+        <ValidatedForm
+          validator={validator}
+          method="post"
+          className="mt-12 space-y-2"
+        >
+          <Input
+            label="Email"
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            defaultValue="paul@remix.run"
+            required
+          />
 
-        <Input
-          label="Password"
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-        />
+          <Input
+            label="Password"
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            defaultValue="pauliscool"
+            required
+          />
 
-        <input type="hidden" name="redirectTo" value={redirectTo} />
-        <SubmitButton size="lg" className="w-full">
-          Log in
-        </SubmitButton>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="remember" name="remember" />
-            <Label htmlFor="remember">Remember me</Label>
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+          <SubmitButton size="lg" className="w-full">
+            Log in
+          </SubmitButton>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="remember" name="remember" />
+              <Label htmlFor="remember">Remember me</Label>
+            </div>
           </div>
-        </div>
-      </ValidatedForm>
+        </ValidatedForm>
+      </div>
     </div>
   );
 }

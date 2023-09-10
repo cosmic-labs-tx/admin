@@ -1,6 +1,7 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 generator client {
@@ -8,14 +9,23 @@ generator client {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
+  id        String  @id @default(cuid())
+  firstName String
+  lastName  String?
+  email     String  @unique
+  role      Role    @default(CLIENT)
+  client    Client  @relation(fields: [clientId], references: [id])
+  clientId  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   password Password?
-  notes    Note[]
+}
+
+enum Role {
+  ADMIN
+  CLIENT
 }
 
 model Password {
@@ -26,16 +36,28 @@ model Password {
 }
 
 model Lead {
-  id              String      @id @default(cuid())
+  id              String       @id @default(cuid())
   name            String
   email           String
-  company         String
-  budget          String
-  attribution     Attribution
-  attributionNote String?
-  message         String?
-  phone           String?
+  client          Client       @relation(fields: [clientId], references: [id])
+  attribution     Attribution?
   meta            Json?
+  phone           String?
+  budget          String?
+  message         String?
+  company         String?
+  attributionNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clientId  String
+}
+
+model Client {
+  id    String @id @default(cuid())
+  name  String
+  leads Lead[]
+  users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -51,16 +73,4 @@ enum Attribution {
   GOOGLE
   REFERRAL
   OTHER
-}
-
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
 }
