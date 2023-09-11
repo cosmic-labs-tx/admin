@@ -83,10 +83,9 @@ export function normalizeEnum(value: string) {
   ];
 
   return value
-    .toLowerCase()
-    .split("_")
+    .split(/[_\s]+/)
     .map((word, index) => {
-      if (index === 0 || !wordsToKeepLowercase.includes(word)) {
+      if (index === 0 || !wordsToKeepLowercase.includes(word.toLowerCase())) {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
       }
       return word.toLowerCase();
