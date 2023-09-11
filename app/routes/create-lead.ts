@@ -31,8 +31,17 @@ export async function action({ request }: ActionArgs) {
     console.log({ ...data, additionalFields });
 
     const result = await validator.validate({ ...data, additionalFields });
-
     if (result.error) return validationError(result.error);
+
+    const client = await prisma.client.findUnique({
+      where: { id: result.data.clientId },
+    });
+    if (!client) {
+      return cors(
+        request,
+        json({ message: `Client not found` }, { status: 404 }),
+      );
+    }
 
     const lead = await prisma.lead.create({ data: result.data });
     return cors(

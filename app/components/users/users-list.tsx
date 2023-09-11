@@ -25,7 +25,7 @@ function UserCard(user: User) {
       className="relative flex items-center border rounded-xl space-x-4 p-4 hover:bg-muted transition-colors"
     >
       <div className="min-w-0 flex-auto">
-        <h2 className="min-w-0 text-sm font-semibold leading-6 text-white">
+        <h2 className="min-w-0 text-sm font-semibold leading-6">
           <span>
             {user.firstName}
             {user.lastName ? ` ${user.lastName}` : ""}
@@ -35,7 +35,7 @@ function UserCard(user: User) {
           <p className="truncate">{normalizeEnum(user.role)}</p>
           <svg
             viewBox="0 0 2 2"
-            className="h-0.5 w-0.5 flex-none fill-gray-300"
+            className="h-0.5 w-0.5 flex-none fill-muted-foreground"
           >
             <circle cx={1} cy={1} r={1} />
           </svg>

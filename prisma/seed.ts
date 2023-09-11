@@ -67,13 +67,13 @@ async function seed() {
           name: faker.person.fullName(),
           email: faker.internet.email().toLowerCase(),
           message: faker.lorem.paragraph(),
-          additionalFields: [
-            { company: faker.company.name() },
-            { phone: faker.phone.number() },
-            { website: faker.internet.url() },
-          ],
           client: {
             connect: { id: client.id },
+          },
+          additionalFields: {
+            company: faker.company.name(),
+            phone: faker.phone.number(),
+            website: faker.internet.url(),
           },
         },
       });

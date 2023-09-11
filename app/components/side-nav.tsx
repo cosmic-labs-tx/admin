@@ -1,6 +1,8 @@
 import type { Role } from "@prisma/client";
-import { Form, Link, NavLink } from "@remix-run/react";
+import { Form, Link, NavLink, useNavigation } from "@remix-run/react";
+import { IconLoader } from "@tabler/icons-react";
 import type { ComponentPropsWithoutRef } from "react";
+import { useSpinDelay } from "spin-delay";
 import { ThemeModeToggle } from "~/components/theme-mode-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -23,6 +25,8 @@ const links: ReadonlyArray<{
 
 export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
   const user = useUser();
+  const navigation = useNavigation();
+  const showSpinner = useSpinDelay(navigation.state !== "idle");
 
   return (
     <nav
@@ -40,6 +44,12 @@ export function SideNav(props: ComponentPropsWithoutRef<"nav">) {
             />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
+          <IconLoader
+            className={cn(
+              showSpinner ? "opacity-100" : "opacity-0",
+              "ml-2 animate-spin text-muted-foreground transition-opacity",
+            )}
+          />
         </Link>
       </div>
       <ul className="mt-12 space-x-0 space-y-1">

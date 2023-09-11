@@ -139,7 +139,7 @@ function FormSelect(props: Props) {
         </SelectContent>
         {error && (
           <p
-            className="mt-0.5 text-xs font-medium text-red-600"
+            className="mt-0.5 text-xs font-medium text-destructive"
             id={`${props.name}-error`}
           >
             {error}
