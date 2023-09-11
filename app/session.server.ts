@@ -1,4 +1,5 @@
 import type { Role } from "@prisma/client";
+import type { Session } from "@remix-run/node";
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
@@ -23,6 +24,10 @@ const USER_SESSION_KEY = "userId";
 export async function getSession(request: Request) {
   const cookie = request.headers.get("Cookie");
   return sessionStorage.getSession(cookie);
+}
+
+export function commitSession(session: Session) {
+  return sessionStorage.commitSession(session);
 }
 
 export async function getUserId(

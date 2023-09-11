@@ -18,7 +18,8 @@ import { Separator } from "~/components/ui/separator";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { UsersList } from "~/components/users/users-list";
 import { prisma } from "~/db.server";
-import { requireUser } from "~/session.server";
+import { getSession, requireUser } from "~/session.server";
+import { jsonWithToast } from "~/toast.server";
 
 const validator = withZod(
   z.object({
@@ -44,6 +45,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export const action = async ({ params, request }: ActionArgs) => {
+  const session = await getSession(request);
   await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) {
@@ -69,7 +71,11 @@ export const action = async ({ params, request }: ActionArgs) => {
     data: { name },
   });
 
-  return json({ client: updatedClient });
+  return jsonWithToast(
+    session,
+    { client: updatedClient },
+    { variant: "default", title: "Client updated", description: "Great job." },
+  );
 };
 
 export default function ClientDetailsPage() {

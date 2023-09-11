@@ -1,6 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,11 +7,15 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
+import { typedjson } from "remix-typedjson";
+import { Notifications } from "~/components/notifications";
 import { ThemeProvider } from "~/components/theme-provider";
 
-import { getUser } from "~/session.server";
+import { commitSession, getSession, getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
+import { getGlobalToast } from "~/toast.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -20,10 +23,24 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  return json({ user: await getUser(request) });
+  const session = await getSession(request);
+
+  return typedjson(
+    {
+      user: await getUser(request),
+      serverToast: getGlobalToast(session),
+    },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    },
+  );
 };
 
 export default function App() {
+  const { serverToast } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" className="h-full min-h-full">
       <head>
@@ -38,6 +55,7 @@ export default function App() {
           <ScrollRestoration />
           <Scripts />
           <LiveReload />
+          <Notifications serverToast={serverToast} />
         </body>
       </ThemeProvider>
     </html>

@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -17,7 +17,8 @@ import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { prisma } from "~/db.server";
-import { requireUser } from "~/session.server";
+import { getSession, requireUser } from "~/session.server";
+import { jsonWithToast } from "~/toast.server";
 
 const validator = withZod(
   z.object({
@@ -47,6 +48,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 export const meta: V2_MetaFunction = () => [{ title: "User • FBL" }];
 
 export const action = async ({ params, request }: ActionArgs) => {
+  const session = await getSession(request);
   await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
@@ -69,7 +71,11 @@ export const action = async ({ params, request }: ActionArgs) => {
     data: rest,
   });
 
-  return json({ user: updatedUser });
+  return jsonWithToast(
+    session,
+    { user: updatedUser },
+    { variant: "default", title: "User updated", description: "Great job." },
+  );
 };
 
 export default function UserDetailsPage() {

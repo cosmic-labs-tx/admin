@@ -16,6 +16,7 @@ module.exports = {
       },
     },
     colors: {
+      white: "#ffffff",
       border: "hsl(var(--border))",
       input: "hsl(var(--input))",
       ring: "hsl(var(--ring))",
@@ -28,6 +29,14 @@ module.exports = {
       secondary: {
         DEFAULT: "hsl(var(--secondary))",
         foreground: "hsl(var(--secondary-foreground))",
+      },
+      success: {
+        DEFAULT: "hsl(var(--success))",
+        foreground: "hsl(var(--success-foreground))",
+      },
+      warning: {
+        DEFAULT: "hsl(var(--warning))",
+        foreground: "hsl(var(--warning-foreground))",
       },
       destructive: {
         DEFAULT: "hsl(var(--destructive))",
