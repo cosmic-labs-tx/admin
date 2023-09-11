@@ -12,9 +12,13 @@ const links: ReadonlyArray<{
   href: string;
   access: ReadonlyArray<Role>;
 }> = [
-  { name: "Leads", href: "/leads", access: ["ADMIN", "CLIENT"] },
-  { name: "Clients", href: "/clients", access: ["ADMIN"] },
-  { name: "Users", href: "/users", access: ["ADMIN"] },
+  {
+    name: "Leads",
+    href: "/leads",
+    access: ["SUPER_ADMIN", "CLIENT_USER", "CLIENT_ADMIN"],
+  },
+  { name: "Clients", href: "/clients", access: ["SUPER_ADMIN"] },
+  { name: "Users", href: "/users", access: ["SUPER_ADMIN"] },
 ] as const;
 
 export function SideNav(props: ComponentPropsWithoutRef<"nav">) {

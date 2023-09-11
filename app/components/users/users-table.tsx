@@ -40,7 +40,7 @@ export function UsersTable({
               <TableCell>{user.email}</TableCell>
               <TableCell
                 className={cn(
-                  user.role === "ADMIN" && "text-accent-foreground",
+                  user.role === "CLIENT_ADMIN" && "text-accent-foreground",
                 )}
               >
                 {normalizeEnum(user.role)}

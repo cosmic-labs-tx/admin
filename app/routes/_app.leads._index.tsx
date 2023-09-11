@@ -1,9 +1,7 @@
 import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { LeadsTable } from "~/components/leads/LeadsTable";
+import { LeadsTable } from "~/components/leads/leads-table";
 import { PageHeader } from "~/components/page-header";
-import { Button } from "~/components/ui/button";
 
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
@@ -20,11 +18,7 @@ export default function LeadIndexPage() {
   const { leads } = useTypedLoaderData<typeof loader>();
   return (
     <>
-      <PageHeader title="Leads">
-        <Button asChild>
-          <Link to="/leads/new">New Lead</Link>
-        </Button>
-      </PageHeader>
+      <PageHeader title="Leads" />
       <LeadsTable leads={leads} />
     </>
   );

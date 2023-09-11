@@ -39,7 +39,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   const user = await createUser({
     ...rest,
-    role: "CLIENT",
+    role: "CLIENT_USER",
   });
 
   return createUserSession({

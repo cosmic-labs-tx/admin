@@ -1,3 +1,4 @@
+import type { Role } from "@prisma/client";
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
@@ -54,21 +55,25 @@ export async function requireUserId(
   return userId;
 }
 
-export async function requireUser(request: Request) {
+export async function requireUser(
+  request: Request,
+  allowedRoles?: Array<Role>,
+) {
+  const defaultAllowedRoles: Array<Role> = [
+    "CLIENT_ADMIN",
+    "CLIENT_USER",
+    "CLIENT_ACCOUNTANT",
+    "SUPER_ADMIN",
+  ];
   const userId = await requireUserId(request);
 
   const user = await getUserById(userId);
-  if (user) return user;
+  if (user && allowedRoles) {
+    if (allowedRoles.includes(user.role)) return user;
+    throw await logout(request);
+  }
 
-  throw await logout(request);
-}
-
-export async function requireAdmin(request: Request) {
-  const userId = await requireUserId(request);
-
-  const user = await getUserById(userId);
-  if (user?.role === "ADMIN") return user;
-
+  if (user && defaultAllowedRoles.includes(user.role)) return user;
   throw await logout(request);
 }
 

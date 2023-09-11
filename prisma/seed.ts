@@ -25,7 +25,7 @@ async function seed() {
       email,
       firstName: "Paul",
       lastName: "Henschel",
-      role: "ADMIN",
+      role: "SUPER_ADMIN",
       client: {
         connect: { id: client.id },
       },
@@ -49,7 +49,7 @@ async function seed() {
         email: faker.internet.email().toLowerCase(),
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
-        role: "CLIENT",
+        role: "CLIENT_USER",
         client: {
           connect: { id: client.id },
         },
@@ -64,10 +64,14 @@ async function seed() {
     for (let i = 0; i < 20; i++) {
       await prisma.lead.create({
         data: {
-          attribution: "ORGANIC",
           name: faker.person.fullName(),
           email: faker.internet.email().toLowerCase(),
-          phone: faker.phone.number("###-###-####"),
+          message: faker.lorem.paragraph(),
+          fields: [
+            { company: faker.company.name() },
+            { phone: faker.phone.number() },
+            { website: faker.internet.url() },
+          ],
           client: {
             connect: { id: client.id },
           },

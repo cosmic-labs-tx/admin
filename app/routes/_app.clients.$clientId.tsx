@@ -1,23 +1,24 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import type { V2_MetaFunction } from "@remix-run/react";
-import { Link, isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { IconChevronRight } from "@tabler/icons-react";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { LeadsTable } from "~/components/leads/LeadsTable";
+import { LeadsTable } from "~/components/leads/leads-table";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
 import { PageHeader } from "~/components/page-header";
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Separator } from "~/components/ui/separator";
 import { SubmitButton } from "~/components/ui/submit-button";
+import { UsersList } from "~/components/users/users-list";
 import { prisma } from "~/db.server";
-import { requireAdmin } from "~/session.server";
-import { normalizeEnum } from "~/utils";
+import { requireUser } from "~/session.server";
 
 const validator = withZod(
   z.object({
@@ -29,7 +30,7 @@ const validator = withZod(
 export const meta: V2_MetaFunction = () => [{ title: "Client • FBL" }];
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  await requireAdmin(request);
+  await requireUser(request, ["SUPER_ADMIN"]);
   invariant(params.clientId, "clientId not found");
 
   const client = await prisma.client.findUnique({
@@ -43,7 +44,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export const action = async ({ params, request }: ActionArgs) => {
-  await requireAdmin(request);
+  await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) {
     return json(validationError(result.error), { status: 400 });
@@ -77,16 +78,14 @@ export default function ClientDetailsPage() {
 
   return (
     <>
-      <div className="flex justify-between">
-        <PageHeader title={client.name}>
-          <ConfirmDestructiveModal
-            open={modalOpen}
-            onOpenChange={setModalOpen}
-            description="This action cannot be undone. This will permanently delete the
+      <PageHeader title={client.name}>
+        <ConfirmDestructiveModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          description="This action cannot be undone. This will permanently delete the
                   client and remove the data from the server."
-          />
-        </PageHeader>
-      </div>
+        />
+      </PageHeader>
 
       <ValidatedForm
         validator={validator}
@@ -95,54 +94,26 @@ export default function ClientDetailsPage() {
         className="max-w-md space-y-4"
       >
         <Input label="Name" id="name" name="name" required />
-        <SubmitButton className="w-full" name="_action" value="update">
-          Save
-        </SubmitButton>
+        <div className="flex items-center gap-2 ">
+          <SubmitButton className="w-full" name="_action" value="update">
+            Save Client
+          </SubmitButton>
+          <Button type="reset" variant="outline">
+            Reset
+          </Button>
+        </div>
       </ValidatedForm>
 
-      <div className="mt-12 space-y-12">
-        <div>
-          <h2>Users</h2>
-          <ul className="divide-y divide-border max-w-md">
-            {client.users.map((user) => (
-              <li key={user.id}>
-                <Link
-                  to={`/users/${user.id}`}
-                  className="relative flex items-center space-x-4 py-4"
-                >
-                  <div className="min-w-0 flex-auto">
-                    <h2 className="min-w-0 text-sm font-semibold leading-6 text-white">
-                      <Link to={`/users/${user.id}`}>
-                        <span>
-                          {user.firstName}
-                          {user.lastName ? ` ${user.lastName}` : ""}
-                        </span>
-                      </Link>
-                    </h2>
-                    <div className="mt-1 flex items-center gap-x-2.5 text-xs leading-5 text-muted-foreground">
-                      <p className="truncate">{normalizeEnum(user.role)}</p>
-                      <svg
-                        viewBox="0 0 2 2"
-                        className="h-0.5 w-0.5 flex-none fill-gray-300"
-                      >
-                        <circle cx={1} cy={1} r={1} />
-                      </svg>
-                      <p className="whitespace-nowrap">
-                        Created {new Date(user.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <IconChevronRight
-                    className="h-5 w-5 flex-none text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
+      <Separator className="my-12" />
+
+      <div className="space-y-12">
+        <div className="max-w-sm">
+          <UsersList users={client.users} />
         </div>
-        <h2 className="mb-4">Leads</h2>
-        <LeadsTable leads={client.leads} />
+
+        {client.leads.length > 0 && (
+          <LeadsTable leads={client.leads} showTitle />
+        )}
       </div>
     </>
   );

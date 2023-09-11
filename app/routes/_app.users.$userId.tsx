@@ -17,7 +17,7 @@ import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { prisma } from "~/db.server";
-import { requireAdmin } from "~/session.server";
+import { requireUser } from "~/session.server";
 
 const validator = withZod(
   z.object({
@@ -31,7 +31,7 @@ const validator = withZod(
 );
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  await requireAdmin(request);
+  await requireUser(request, ["SUPER_ADMIN"]);
   invariant(params.userId, "userId not found");
 
   const user = await prisma.user.findUnique({
@@ -47,7 +47,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 export const meta: V2_MetaFunction = () => [{ title: "User • FBL" }];
 
 export const action = async ({ params, request }: ActionArgs) => {
-  await requireAdmin(request);
+  await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
@@ -121,7 +121,7 @@ export default function UserDetailsPage() {
         />
         <div className="flex items-center gap-2">
           <SubmitButton className="w-full" name="_action" value="update">
-            Save
+            Save User
           </SubmitButton>
           <Button type="reset" variant="outline">
             Reset

@@ -9,8 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { prisma } from "~/db.server";
-
-import { requireAdmin } from "~/session.server";
+import { requireUser } from "~/session.server";
 
 const validator = withZod(
   z.object({
@@ -21,7 +20,7 @@ const validator = withZod(
 export const meta: V2_MetaFunction = () => [{ title: "New Client • FBL" }];
 
 export const action = async ({ request }: ActionArgs) => {
-  await requireAdmin(request);
+  await requireUser(request, ["SUPER_ADMIN"]);
 
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);

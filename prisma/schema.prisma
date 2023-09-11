@@ -12,7 +12,7 @@ model User {
   firstName String
   lastName  String?
   email     String  @unique
-  role      Role    @default(CLIENT)
+  role      Role    @default(CLIENT_USER)
   client    Client? @relation(fields: [clientId], references: [id])
   clientId  String?
 
@@ -23,8 +23,10 @@ model User {
 }
 
 enum Role {
-  ADMIN
-  CLIENT
+  CLIENT_USER
+  CLIENT_ADMIN
+  CLIENT_ACCOUNTANT
+  SUPER_ADMIN
 }
 
 model Password {
@@ -35,21 +37,17 @@ model Password {
 }
 
 model Lead {
-  id              String       @id @default(cuid())
-  name            String
-  email           String
-  client          Client       @relation(fields: [clientId], references: [id])
-  attribution     Attribution?
-  meta            Json?
-  phone           String?
-  budget          String?
-  message         String?
-  company         String?
-  attributionNote String?
+  id               String  @id @default(cuid())
+  name             String
+  email            String
+  client           Client  @relation(fields: [clientId], references: [id])
+  clientId         String
+  message          String?
+  meta             Json?
+  additionalFields Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  clientId  String
 }
 
 model Client {
@@ -60,16 +58,4 @@ model Client {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum Attribution {
-  ORGANIC
-  WORD_OF_MOUTH
-  FACEBOOK
-  INSTAGRAM
-  TWITTER
-  LINKEDIN
-  GOOGLE
-  REFERRAL
-  OTHER
 }

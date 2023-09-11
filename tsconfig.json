@@ -14,6 +14,7 @@
     "strict": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
+    "noErrorTruncation": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"]
