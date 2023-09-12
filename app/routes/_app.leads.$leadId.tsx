@@ -95,7 +95,7 @@ export default function LeadDetailsPage() {
               Meta Information
             </h3>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Automatically athered from the user's device at the time they
+              Automatically gathered from the user's device at the time they
               submitted.
             </p>
           </div>

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import type { ToastProps } from "~/components/ui/toast";
 import { Toaster } from "~/components/ui/toaster";
+import type { Toast } from "~/components/ui/use-toast";
 import { useToast } from "~/components/ui/use-toast";
 
-export function Notifications({ serverToast }: { serverToast: ToastProps }) {
+export function Notifications({ serverToast }: { serverToast: Toast | null }) {
   const { toast } = useToast();
 
   useEffect(() => {
