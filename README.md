@@ -1,1 +1,1 @@
-Admin site for Cosmic Labs 🪐
+Admin site for Cosmic Labs 🪐 🚀
