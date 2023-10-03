@@ -16,7 +16,7 @@ async function seed() {
 
   const client = await prisma.client.create({
     data: {
-      name: "Friendly Bear Labs",
+      name: "Cosmic Labs",
     },
   });
 

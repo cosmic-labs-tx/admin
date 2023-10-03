@@ -1,22 +1,22 @@
 import type { Prisma } from "@prisma/client";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { V2_MetaFunction } from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { notFound, unauthorized } from "remix-utils";
 import invariant from "tiny-invariant";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
 import { PageHeader } from "~/components/page-header";
 import { prisma } from "~/db.server";
 import { cn } from "~/lib/utils";
 import { deleteLead } from "~/models/lead.server";
+import { notFound, unauthorized } from "~/responses";
 import { requireUser } from "~/session.server";
 
-export const meta: V2_MetaFunction = () => [{ title: "Lead • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Lead • FBL" }];
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const user = await requireUser(request);
   invariant(params.leadId, "leadId param not found");
 
@@ -32,7 +32,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return typedjson({ lead });
 };
 
-export const action = async ({ params, request }: ActionArgs) => {
+export const action = async ({ params, request }: ActionFunctionArgs) => {
   const user = await requireUser(request);
   invariant(params.leadId, "leadId param not found");
 

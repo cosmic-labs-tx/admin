@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import type { V2_MetaFunction } from "@remix-run/react";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -24,14 +24,14 @@ const validator = withZod(
   }),
 );
 
-export const meta: V2_MetaFunction = () => [{ title: "New User • FBL" }];
+export const meta: MetaFunction = () => [{ title: "New User • FBL" }];
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);
   return typedjson({ clients: await prisma.client.findMany() });
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);

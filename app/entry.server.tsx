@@ -1,13 +1,7 @@
-/**
- * By default, Remix will handle generating the HTTP Response for you.
- * You are free to delete this file if you'd like to, but if you ever want it revealed again, you can run `npx remix reveal` ✨
- * For more information, see https://remix.run/docs/en/main/file-conventions/entry.server
- */
-
 import { PassThrough } from "node:stream";
 
 import type { EntryContext } from "@remix-run/node";
-import { Response } from "@remix-run/node";
+import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
@@ -42,7 +36,7 @@ function handleBotRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    const { pipe, abort } = renderToPipeableStream(
+    const { abort, pipe } = renderToPipeableStream(
       <RemixServer
         context={remixContext}
         url={request.url}
@@ -55,7 +49,7 @@ function handleBotRequest(
           responseHeaders.set("Content-Type", "text/html");
 
           resolve(
-            new Response(body, {
+            new Response(createReadableStreamFromReadable(body), {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
@@ -84,7 +78,7 @@ function handleBrowserRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    const { pipe, abort } = renderToPipeableStream(
+    const { abort, pipe } = renderToPipeableStream(
       <RemixServer
         context={remixContext}
         url={request.url}
@@ -95,10 +89,9 @@ function handleBrowserRequest(
           const body = new PassThrough();
 
           responseHeaders.set("Content-Type", "text/html");
-          responseHeaders.set("Access-Control-Allow-Origin", "*");
 
           resolve(
-            new Response(body, {
+            new Response(createReadableStreamFromReadable(body), {
               headers: responseHeaders,
               status: responseStatusCode,
             }),

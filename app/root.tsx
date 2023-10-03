@@ -1,5 +1,4 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
-import { type LinksFunction, type LoaderArgs } from "@remix-run/node";
+import { type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -17,10 +16,9 @@ import { getGlobalToast } from "~/toast.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request);
 
   return typedjson(

@@ -1,12 +1,11 @@
 import { Role } from "@prisma/client";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { V2_MetaFunction } from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { notFound } from "remix-utils";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -17,6 +16,7 @@ import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { prisma } from "~/db.server";
+import { notFound } from "~/responses";
 import { getSession, requireUser } from "~/session.server";
 import { jsonWithToast } from "~/toast.server";
 
@@ -31,7 +31,7 @@ const validator = withZod(
   }),
 );
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);
   invariant(params.userId, "userId not found");
 
@@ -45,9 +45,9 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return typedjson({ user, clients });
 };
 
-export const meta: V2_MetaFunction = () => [{ title: "User • FBL" }];
+export const meta: MetaFunction = () => [{ title: "User • FBL" }];
 
-export const action = async ({ params, request }: ActionArgs) => {
+export const action = async ({ params, request }: ActionFunctionArgs) => {
   const session = await getSession(request);
   await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());

@@ -1,6 +1,6 @@
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { V2_MetaFunction } from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { z } from "zod";
@@ -17,9 +17,9 @@ const validator = withZod(
   }),
 );
 
-export const meta: V2_MetaFunction = () => [{ title: "New Client • FBL" }];
+export const meta: MetaFunction = () => [{ title: "New Client • FBL" }];
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);
 
   const result = await validator.validate(await request.formData());

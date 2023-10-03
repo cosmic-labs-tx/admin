@@ -1,7 +1,7 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { Response, json } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
-import { cors } from "remix-utils";
+import { cors } from "remix-utils/cors";
 import { validationError } from "remix-validated-form";
 import { z } from "zod";
 
@@ -18,11 +18,11 @@ const validator = withZod(
   }),
 );
 
-export function loader({ request }: LoaderArgs) {
+export function loader({ request }: LoaderFunctionArgs) {
   return cors(request, new Response());
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   try {
     const form = Object.fromEntries(await request.formData());
 

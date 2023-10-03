@@ -1,4 +1,8 @@
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -23,13 +27,13 @@ const validator = withZod(
   }),
 );
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
   return json({});
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const result = await validator.validate(await request.formData());
 
   if (result.error) return validationError(result.error);
@@ -53,7 +57,7 @@ export const action = async ({ request }: ActionArgs) => {
   });
 };
 
-export const meta: V2_MetaFunction = () => [{ title: "Login" }];
+export const meta: MetaFunction = () => [{ title: "Login" }];
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
@@ -62,7 +66,7 @@ export default function LoginPage() {
   return (
     <div className="grid h-full place-items-center">
       <div className="max-w-lg px-8">
-        <h1 className="text-4xl font-extrabold">Friendly Bear Labs Admin</h1>
+        <h1 className="text-4xl font-extrabold">Cosmic Labs Admin</h1>
         <ValidatedForm
           validator={validator}
           method="post"
