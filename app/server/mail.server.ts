@@ -35,7 +35,6 @@ export async function sendLeadCreationEmail({ emails, data }: { emails: string |
   const fieldsToIgnore = ["cf-turnstile-response", "meta", "id", "updatedAt", "clientId"];
 
   try {
-    console.log("Sending email");
     const email = await resend.sendEmail({
       from: "Cosmic Labs <no-reply@getcosmic.dev>",
       to: emails,
