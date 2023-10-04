@@ -8,7 +8,7 @@ import { installGlobals } from "@remix-run/node";
 import { parse } from "cookie";
 
 import { createUser } from "~/models/user.server";
-import { createUserSession } from "~/session.server";
+import { createUserSession } from "~/server/session.server";
 
 installGlobals();
 
@@ -41,7 +41,7 @@ async function createAndLogin(email: string) {
 <cookie>
   ${parsedCookie.__session}
 </cookie>
-  `.trim(),
+  `.trim()
   );
 }
 

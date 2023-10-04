@@ -15,10 +15,10 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
-import { prisma } from "~/db.server";
 import { notFound } from "~/responses";
-import { getSession, requireUser } from "~/session.server";
-import { jsonWithToast } from "~/toast.server";
+import { prisma } from "~/server/db.server";
+import { getSession, requireUser } from "~/server/session.server";
+import { jsonWithToast } from "~/server/toast.server";
 
 const validator = withZod(
   z.object({
@@ -28,7 +28,7 @@ const validator = withZod(
     role: z.nativeEnum(Role),
     clientId: z.string().optional(),
     _action: z.enum(["delete", "update"]),
-  }),
+  })
 );
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -71,11 +71,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
     data: rest,
   });
 
-  return jsonWithToast(
-    session,
-    { user: updatedUser },
-    { variant: "default", title: "User updated", description: "Great job." },
-  );
+  return jsonWithToast(session, { user: updatedUser }, { variant: "default", title: "User updated", description: "Great job." });
 };
 
 export default function UserDetailsPage() {
@@ -84,9 +80,7 @@ export default function UserDetailsPage() {
 
   return (
     <>
-      <PageHeader
-        title={`${user.firstName}${user.lastName ? " " + user.lastName : ""}`}
-      >
+      <PageHeader title={`${user.firstName}${user.lastName ? " " + user.lastName : ""}`}>
         <ConfirmDestructiveModal
           open={modalOpen}
           onOpenChange={setModalOpen}
@@ -119,12 +113,7 @@ export default function UserDetailsPage() {
             label: value,
           }))}
         />
-        <Select
-          name="clientId"
-          label="Client"
-          placeholder="Select a client"
-          options={clients.map((c) => ({ value: c.id, label: c.name }))}
-        />
+        <Select name="clientId" label="Client" placeholder="Select a client" options={clients.map((c) => ({ value: c.id, label: c.name }))} />
         <div className="flex items-center gap-2">
           <SubmitButton className="w-full" name="_action" value="update">
             Save User
@@ -142,11 +131,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   if (error instanceof Error) {
-    return (
-      <p className="font-medium text-destructive">
-        An unexpected error occurred: {error.message}
-      </p>
-    );
+    return <p className="font-medium text-destructive">An unexpected error occurred: {error.message}</p>;
   }
 
   if (!isRouteErrorResponse(error)) {

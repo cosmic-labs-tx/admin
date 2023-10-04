@@ -8,11 +8,11 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
 import { PageHeader } from "~/components/page-header";
-import { prisma } from "~/db.server";
 import { cn } from "~/lib/utils";
-import { deleteLead } from "~/models/lead.server";
 import { notFound, unauthorized } from "~/responses";
-import { requireUser } from "~/session.server";
+import { prisma } from "~/server/db.server";
+import { deleteLead } from "~/server/lead.server";
+import { requireUser } from "~/server/session.server";
 
 export const meta: MetaFunction = () => [{ title: "Lead • FBL" }];
 
@@ -68,18 +68,12 @@ export default function LeadDetailsPage() {
 
       <div className="mb-4">
         <h2>Form Data</h2>
-        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-          If you don't see data from a field, it means the user didn't fill it
-          in.
-        </p>
+        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">If you don't see data from a field, it means the user didn't fill it in.</p>
       </div>
       <dl className="divide-y divide-muted">
         <DetailItem label="Name" value={lead.name} />
         <DetailItem label="Email" value={lead.email} />
-        <DetailItem
-          label="Created"
-          value={new Date(lead.createdAt).toLocaleString()}
-        />
+        <DetailItem label="Created" value={new Date(lead.createdAt).toLocaleString()} />
         <DetailItem label="Message" value={lead.message} />
         {lead.additionalFields &&
           Object.entries(lead.additionalFields).map(([label, value]) => {
@@ -91,13 +85,8 @@ export default function LeadDetailsPage() {
       {lead.meta && (
         <>
           <div className="mb-6 mt-12">
-            <h3 className="text-base font-semibold leading-7 text-secondary-foreground">
-              Meta Information
-            </h3>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Automatically gathered from the user's device at the time they
-              submitted.
-            </p>
+            <h3 className="text-base font-semibold leading-7 text-secondary-foreground">Meta Information</h3>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">Automatically gathered from the user's device at the time they submitted.</p>
           </div>
           <dl className="divide-y divide-muted">
             {Object.entries(lead.meta).map(([key, value]) => (
@@ -110,24 +99,11 @@ export default function LeadDetailsPage() {
   );
 }
 
-function DetailItem({
-  label,
-  value,
-}: {
-  label: string;
-  value: Prisma.JsonValue;
-}) {
+function DetailItem({ label, value }: { label: string; value: Prisma.JsonValue }) {
   return (
-    <div className="sm:gap-4 px-4 py-4 sm:grid sm:grid-cols-3 sm:px-0">
+    <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
       <dt className="text-sm font-semibold capitalize">{label}</dt>
-      <dd
-        className={cn(
-          "mt-1 text-sm sm:col-span-2 sm:mt-0",
-          value ? "" : "text-muted-foreground",
-        )}
-      >
-        {String(value)}
-      </dd>
+      <dd className={cn("mt-1 text-sm sm:col-span-2 sm:mt-0", value ? "" : "text-muted-foreground")}>{String(value)}</dd>
     </div>
   );
 }
@@ -136,11 +112,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   if (error instanceof Error) {
-    return (
-      <p className="font-medium text-destructive">
-        An unexpected error occurred: {error.message}
-      </p>
-    );
+    return <p className="font-medium text-destructive">An unexpected error occurred: {error.message}</p>;
   }
 
   if (!isRouteErrorResponse(error)) {

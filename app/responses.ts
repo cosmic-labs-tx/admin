@@ -8,10 +8,7 @@ import { json, redirect } from "@remix-run/server-runtime";
  *   return created(result);
  * }
  */
-export function created<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function created<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json(data, { ...init, status: 201 });
 }
 
@@ -29,10 +26,7 @@ export function created<Data = unknown>(
  *   return redirectBack(request, { fallback: "/search" });
  * }
  */
-export function redirectBack(
-  request: Request,
-  { fallback, ...init }: ResponseInit & { fallback: string },
-): Response {
+export function redirectBack(request: Request, { fallback, ...init }: ResponseInit & { fallback: string }): Response {
   return redirect(request.headers.get("Referer") ?? fallback, init);
 }
 
@@ -44,10 +38,7 @@ export function redirectBack(
  *   throw badRequest<BoundaryData>({ user });
  * }
  */
-export function badRequest<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function badRequest<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json<Data>(data, { ...init, status: 400 });
 }
 
@@ -59,10 +50,7 @@ export function badRequest<Data = unknown>(
  *   throw unauthorized<BoundaryData>({ user });
  * }
  */
-export function unauthorized<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function unauthorized<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json<Data>(data, { ...init, status: 401 });
 }
 
@@ -74,10 +62,7 @@ export function unauthorized<Data = unknown>(
  *   if (!user.idAdmin) throw forbidden<BoundaryData>({ user });
  * }
  */
-export function forbidden<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function forbidden<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json<Data>(data, { ...init, status: 403 });
 }
 
@@ -89,10 +74,7 @@ export function forbidden<Data = unknown>(
  *   if (!db.exists(params.id)) throw notFound<BoundaryData>({ user });
  * }
  */
-export function notFound<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function notFound<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json<Data>(data, { ...init, status: 404 });
 }
 
@@ -104,10 +86,7 @@ export function notFound<Data = unknown>(
  *   throw unprocessableEntity<BoundaryData>({ user });
  * }
  */
-export function unprocessableEntity<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function unprocessableEntity<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json<Data>(data, { ...init, status: 422 });
 }
 
@@ -119,10 +98,7 @@ export function unprocessableEntity<Data = unknown>(
  *   throw serverError<BoundaryData>({ user });
  * }
  */
-export function serverError<Data = unknown>(
-  data: Data,
-  init?: Omit<ResponseInit, "status">,
-) {
+export function serverError<Data = unknown>(data: Data, init?: Omit<ResponseInit, "status">) {
   return json<Data>(data, { ...init, status: 500 });
 }
 
@@ -149,10 +125,7 @@ export function notModified(init?: Omit<ResponseInit, "status">) {
  *   return javascript("console.log('Hello World')");
  * }
  */
-export function javascript(
-  content: string,
-  init: number | ResponseInit = {},
-): Response {
+export function javascript(content: string, init: number | ResponseInit = {}): Response {
   let responseInit = typeof init === "number" ? { status: init } : init;
 
   let headers = new Headers(responseInit.headers);
@@ -177,10 +150,7 @@ export function javascript(
  *   return css("body { color: red; }");
  * }
  */
-export function stylesheet(
-  content: string,
-  init: number | ResponseInit = {},
-): Response {
+export function stylesheet(content: string, init: number | ResponseInit = {}): Response {
   let responseInit = typeof init === "number" ? { status: init } : init;
 
   let headers = new Headers(responseInit.headers);
@@ -205,10 +175,7 @@ export function stylesheet(
  *   return pdf(await generatePDF(request.formData()));
  * }
  */
-export function pdf(
-  content: Blob | Buffer | ArrayBuffer,
-  init: number | ResponseInit = {},
-): Response {
+export function pdf(content: Blob | Buffer | ArrayBuffer, init: number | ResponseInit = {}): Response {
   let responseInit = typeof init === "number" ? { status: init } : init;
 
   let headers = new Headers(responseInit.headers);
@@ -233,10 +200,7 @@ export function pdf(
  *   return html("<h1>Hello World</h1>");
  * }
  */
-export function html(
-  content: string,
-  init: number | ResponseInit = {},
-): Response {
+export function html(content: string, init: number | ResponseInit = {}): Response {
   let responseInit = typeof init === "number" ? { status: init } : init;
 
   let headers = new Headers(responseInit.headers);
@@ -261,10 +225,7 @@ export function html(
  *   return xml("<?xml version='1.0'?><catalog></catalog>");
  * }
  */
-export function xml(
-  content: string,
-  init: number | ResponseInit = {},
-): Response {
+export function xml(content: string, init: number | ResponseInit = {}): Response {
   let responseInit = typeof init === "number" ? { status: init } : init;
 
   let headers = new Headers(responseInit.headers);
@@ -292,10 +253,7 @@ export function xml(
  *   `);
  * }
  */
-export function txt(
-  content: string,
-  init: number | ResponseInit = {},
-): Response {
+export function txt(content: string, init: number | ResponseInit = {}): Response {
   let responseInit = typeof init === "number" ? { status: init } : init;
 
   let headers = new Headers(responseInit.headers);
@@ -309,14 +267,7 @@ export function txt(
   });
 }
 
-export type ImageType =
-  | "image/jpeg"
-  | "image/png"
-  | "image/gif"
-  | "image/svg+xml"
-  | "image/webp"
-  | "image/bmp"
-  | "image/avif";
+export type ImageType = "image/jpeg" | "image/png" | "image/gif" | "image/svg+xml" | "image/webp" | "image/bmp" | "image/avif";
 
 /**
  * Create a response with a image file response.
@@ -329,10 +280,7 @@ export type ImageType =
  *   return image(await takeScreenshot(), { type: "image/avif" });
  * }
  */
-export function image(
-  content: Buffer | ArrayBuffer | ReadableStream,
-  { type, ...init }: ResponseInit & { type: ImageType },
-): Response {
+export function image(content: Buffer | ArrayBuffer | ReadableStream, { type, ...init }: ResponseInit & { type: ImageType }): Response {
   let headers = new Headers(init.headers);
 
   if (!headers.has("Content-Type")) {

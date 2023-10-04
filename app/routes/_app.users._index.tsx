@@ -4,8 +4,8 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { PageHeader } from "~/components/page-header";
 import { Button } from "~/components/ui/button";
 import { UsersTable } from "~/components/users/users-table";
-import { prisma } from "~/db.server";
-import { requireUser } from "~/session.server";
+import { prisma } from "~/server/db.server";
+import { requireUser } from "~/server/session.server";
 
 export const meta: MetaFunction = () => [{ title: "Users • FBL" }];
 

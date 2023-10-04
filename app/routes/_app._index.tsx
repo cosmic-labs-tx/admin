@@ -1,10 +1,6 @@
-import {
-  json,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
+import { json, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { PageHeader } from "~/components/page-header";
-import { requireUserId } from "~/session.server";
+import { requireUserId } from "~/server/session.server";
 
 export const meta: MetaFunction = () => [{ title: "Dashboard • FBL" }];
 

@@ -5,7 +5,7 @@ import { cors } from "remix-utils/cors";
 import { validationError } from "remix-validated-form";
 import { z } from "zod";
 
-import { prisma } from "~/db.server";
+import { prisma } from "~/server/db.server";
 
 const validator = withZod(
   z.object({
@@ -36,14 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
       return cors(request, validationError(result.error));
     }
 
-    const {
-      clientId,
-      name,
-      email,
-      message,
-      meta,
-      "cf-turnstile-response": token,
-    } = result.data;
+    const { clientId, name, email, message, meta, "cf-turnstile-response": token } = result.data;
 
     // Cloudflare Turnstile
     try {
@@ -53,37 +46,25 @@ export async function action({ request }: ActionFunctionArgs) {
       const outcome = await turnstile.json();
       if (!outcome.success) {
         console.error(outcome);
-        return cors(
-          request,
-          json({ message: `Cloudflare Turnstile failed` }, { status: 400 }),
-        );
+        return cors(request, json({ message: `Cloudflare Turnstile failed` }, { status: 400 }));
       }
     } catch (e) {
       console.error(e);
-      return cors(
-        request,
-        json({ message: `Cloudflare Turnstile failed` }, { status: 400 }),
-      );
+      return cors(request, json({ message: `Cloudflare Turnstile failed` }, { status: 400 }));
     }
 
     const client = await prisma.client.findUnique({ where: { id: clientId } });
     if (!client) {
-      return cors(
-        request,
-        json({ message: `Client not found` }, { status: 404 }),
-      );
+      return cors(request, json({ message: `Client not found` }, { status: 404 }));
     }
 
     // Additional fields
-    const additionalFields = Object.keys(form).reduce<Record<string, any>>(
-      (acc, key) => {
-        if (!result.data.hasOwnProperty(key)) {
-          acc[key] = form[key];
-        }
-        return acc;
-      },
-      {},
-    );
+    const additionalFields = Object.keys(form).reduce<Record<string, any>>((acc, key) => {
+      if (!result.data.hasOwnProperty(key)) {
+        acc[key] = form[key];
+      }
+      return acc;
+    }, {});
 
     const lead = await prisma.lead.create({
       data: {
@@ -95,10 +76,7 @@ export async function action({ request }: ActionFunctionArgs) {
         additionalFields,
       },
     });
-    return cors(
-      request,
-      json({ message: "Lead created", lead }, { status: 201 }),
-    );
+    return cors(request, json({ message: "Lead created", lead }, { status: 201 }));
   } catch (e) {
     console.log(e);
     if (e instanceof Error) {

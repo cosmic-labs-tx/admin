@@ -11,8 +11,8 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
-import { prisma } from "~/db.server";
-import { requireUser } from "~/session.server";
+import { prisma } from "~/server/db.server";
+import { requireUser } from "~/server/session.server";
 
 const validator = withZod(
   z.object({
@@ -21,7 +21,7 @@ const validator = withZod(
     email: z.string().email({ message: "Invalid email address" }),
     role: z.nativeEnum(Role),
     clientId: z.string().optional(),
-  }),
+  })
 );
 
 export const meta: MetaFunction = () => [{ title: "New User • FBL" }];
@@ -47,11 +47,7 @@ export default function NewUserPage() {
     <>
       <PageHeader title="New User" />
 
-      <ValidatedForm
-        validator={validator}
-        method="post"
-        className="max-w-md space-y-4"
-      >
+      <ValidatedForm validator={validator} method="post" className="max-w-md space-y-4">
         <Input label="First name" id="firstName" name="firstName" required />
         <Input label="Last name" id="lastName" name="lastName" />
         <Input label="Email" id="email" name="email" />
@@ -64,12 +60,7 @@ export default function NewUserPage() {
             label: value,
           }))}
         />
-        <Select
-          name="clientId"
-          label="Client"
-          placeholder="Select a client"
-          options={clients.map((c) => ({ value: c.id, label: c.name }))}
-        />
+        <Select name="clientId" label="Client" placeholder="Select a client" options={clients.map((c) => ({ value: c.id, label: c.name }))} />
         <div className="flex items-center gap-2">
           <SubmitButton>Create</SubmitButton>
           <Button type="reset" variant="outline">
@@ -85,11 +76,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   if (error instanceof Error) {
-    return (
-      <p className="font-medium text-destructive">
-        An unexpected error occurred: {error.message}
-      </p>
-    );
+    return <p className="font-medium text-destructive">An unexpected error occurred: {error.message}</p>;
   }
 
   if (!isRouteErrorResponse(error)) {

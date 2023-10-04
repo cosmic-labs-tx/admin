@@ -3,8 +3,8 @@ import type { Session } from "@remix-run/node";
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
-import type { User } from "~/models/user.server";
-import { getUserById } from "~/models/user.server";
+import type { User } from "~/server/user.server";
+import { getUserById } from "~/server/user.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -30,9 +30,7 @@ export function commitSession(session: Session) {
   return sessionStorage.commitSession(session);
 }
 
-export async function getUserId(
-  request: Request,
-): Promise<User["id"] | undefined> {
+export async function getUserId(request: Request): Promise<User["id"] | undefined> {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
   return userId;
@@ -48,10 +46,7 @@ export async function getUser(request: Request) {
   throw await logout(request);
 }
 
-export async function requireUserId(
-  request: Request,
-  redirectTo: string = new URL(request.url).pathname,
-) {
+export async function requireUserId(request: Request, redirectTo: string = new URL(request.url).pathname) {
   const userId = await getUserId(request);
   if (!userId) {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
@@ -60,16 +55,8 @@ export async function requireUserId(
   return userId;
 }
 
-export async function requireUser(
-  request: Request,
-  allowedRoles?: Array<Role>,
-) {
-  const defaultAllowedRoles: Array<Role> = [
-    "CLIENT_ADMIN",
-    "CLIENT_USER",
-    "CLIENT_ACCOUNTANT",
-    "SUPER_ADMIN",
-  ];
+export async function requireUser(request: Request, allowedRoles?: Array<Role>) {
+  const defaultAllowedRoles: Array<Role> = ["CLIENT_ADMIN", "CLIENT_USER", "CLIENT_ACCOUNTANT", "SUPER_ADMIN"];
   const userId = await requireUserId(request);
 
   const user = await getUserById(userId);
@@ -82,17 +69,7 @@ export async function requireUser(
   throw await logout(request);
 }
 
-export async function createUserSession({
-  request,
-  userId,
-  remember,
-  redirectTo,
-}: {
-  request: Request;
-  userId: string;
-  remember: boolean;
-  redirectTo: string;
-}) {
+export async function createUserSession({ request, userId, remember, redirectTo }: { request: Request; userId: string; remember: boolean; redirectTo: string }) {
   const session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
   return redirect(redirectTo, {

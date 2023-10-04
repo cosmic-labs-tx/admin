@@ -1,7 +1,7 @@
 import type { Password, Prisma, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-import { prisma } from "~/db.server";
+import { prisma } from "~/server/db.server";
 
 export type { User } from "@prisma/client";
 
@@ -15,9 +15,7 @@ export async function getUserByEmail(email: User["email"]) {
   return prisma.user.findUnique({ where: { email } });
 }
 
-export async function createUser(
-  data: Prisma.UserUncheckedCreateInput & { password: Password["hash"] },
-) {
+export async function createUser(data: Prisma.UserUncheckedCreateInput & { password: Password["hash"] }) {
   const { password, ...rest } = data;
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -37,10 +35,7 @@ export async function deleteUserByEmail(email: User["email"]) {
   return prisma.user.delete({ where: { email } });
 }
 
-export async function verifyLogin(
-  email: User["email"],
-  password: Password["hash"],
-) {
+export async function verifyLogin(email: User["email"], password: Password["hash"]) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
     include: { password: true },
@@ -50,10 +45,7 @@ export async function verifyLogin(
     return null;
   }
 
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash,
-  );
+  const isValid = await bcrypt.compare(password, userWithPassword.password.hash);
 
   if (!isValid) {
     return null;

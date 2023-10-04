@@ -1,8 +1,4 @@
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -12,19 +8,17 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { SubmitButton } from "~/components/ui/submit-button";
-import { verifyLogin } from "~/models/user.server";
-import { createUserSession, getUserId } from "~/session.server";
+import { createUserSession, getUserId } from "~/server/session.server";
+import { verifyLogin } from "~/server/user.server";
 import { safeRedirect } from "~/utils";
 
 const validator = withZod(
   z.object({
     email: z.string().min(1, { message: "Email is required" }).email(),
-    password: z
-      .string()
-      .min(8, { message: "Password must be 8 or more characters." }),
+    password: z.string().min(8, { message: "Password must be 8 or more characters." }),
     remember: z.literal("on").optional(),
     redirectTo: z.string().optional(),
-  }),
+  })
 );
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -67,29 +61,9 @@ export default function LoginPage() {
     <div className="grid h-full place-items-center">
       <div className="max-w-lg px-8">
         <h1 className="text-4xl font-extrabold">Cosmic Labs Admin</h1>
-        <ValidatedForm
-          validator={validator}
-          method="post"
-          className="mt-8 space-y-3"
-        >
-          <Input
-            label="Email"
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            defaultValue="paul@remix.run"
-            required
-          />
-          <Input
-            label="Password"
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            defaultValue="pauliscool"
-            required
-          />
+        <ValidatedForm validator={validator} method="post" className="mt-8 space-y-3">
+          <Input label="Email" id="email" name="email" type="email" autoComplete="email" defaultValue="paul@remix.run" required />
+          <Input label="Password" id="password" name="password" type="password" autoComplete="current-password" defaultValue="pauliscool" required />
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="flex items-center justify-between">

@@ -8,13 +8,13 @@ import { PageHeader } from "~/components/page-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { SubmitButton } from "~/components/ui/submit-button";
-import { prisma } from "~/db.server";
-import { requireUser } from "~/session.server";
+import { prisma } from "~/server/db.server";
+import { requireUser } from "~/server/session.server";
 
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
-  }),
+  })
 );
 
 export const meta: MetaFunction = () => [{ title: "New Client • FBL" }];
@@ -33,11 +33,7 @@ export default function NewClientPage() {
   return (
     <>
       <PageHeader title="New Client" />
-      <ValidatedForm
-        validator={validator}
-        className="max-w-lg space-y-4"
-        method="post"
-      >
+      <ValidatedForm validator={validator} className="max-w-lg space-y-4" method="post">
         <Input label="Name" id="name" name="name" type="text" required />
         <div className="flex flex-col gap-2 sm:flex-row">
           <SubmitButton>Create Client</SubmitButton>

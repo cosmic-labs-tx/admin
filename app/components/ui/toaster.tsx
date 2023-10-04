@@ -1,16 +1,5 @@
-import {
-  IconAlertCircleFilled,
-  IconAlertTriangleFilled,
-  IconCircleCheckFilled,
-} from "@tabler/icons-react";
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "~/components/ui/toast";
+import { IconAlertCircleFilled, IconAlertTriangleFilled, IconCircleCheckFilled } from "@tabler/icons-react";
+import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "~/components/ui/toast";
 import { useToast } from "~/components/ui/use-toast";
 
 export function Toaster() {
@@ -18,17 +7,10 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({
-        id,
-        title,
-        description,
-        action,
-        variant,
-        ...props
-      }) {
+      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
         return (
           <Toast key={id} variant={variant} {...props}>
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <div>
                 {variant === "default" ? (
                   <IconCircleCheckFilled className="h-6 w-6 text-success" />
@@ -40,9 +22,7 @@ export function Toaster() {
               </div>
               <div>
                 {title && <ToastTitle>{title}</ToastTitle>}
-                {description && (
-                  <ToastDescription>{description}</ToastDescription>
-                )}
+                {description && <ToastDescription>{description}</ToastDescription>}
               </div>
             </div>
             {action}

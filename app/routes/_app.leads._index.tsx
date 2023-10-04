@@ -3,8 +3,8 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { LeadsTable } from "~/components/leads/leads-table";
 import { PageHeader } from "~/components/page-header";
 
-import { prisma } from "~/db.server";
-import { requireUserId } from "~/session.server";
+import { prisma } from "~/server/db.server";
+import { requireUserId } from "~/server/session.server";
 
 export const meta: MetaFunction = () => [{ title: "Leads • FBL" }];
 

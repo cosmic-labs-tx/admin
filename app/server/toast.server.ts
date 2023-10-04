@@ -1,7 +1,7 @@
 import type { Session, TypedResponse } from "@remix-run/node";
 import { redirect, typedjson } from "remix-typedjson";
 import type { Toast } from "~/components/ui/use-toast";
-import { commitSession } from "~/session.server";
+import { commitSession } from "~/server/session.server";
 
 export function setGlobalToast(session: Session, toast: Toast) {
   session.flash("globalMessage", toast);

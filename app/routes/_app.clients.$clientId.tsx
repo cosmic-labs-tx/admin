@@ -16,16 +16,16 @@ import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { UsersList } from "~/components/users/users-list";
-import { prisma } from "~/db.server";
 import { notFound } from "~/responses";
-import { getSession, requireUser } from "~/session.server";
-import { jsonWithToast } from "~/toast.server";
+import { prisma } from "~/server/db.server";
+import { getSession, requireUser } from "~/server/session.server";
+import { jsonWithToast } from "~/server/toast.server";
 
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
     _action: z.enum(["delete", "update"]),
-  }),
+  })
 );
 
 export const meta: MetaFunction = () => [{ title: "Client • FBL" }];
@@ -71,11 +71,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
     data: { name },
   });
 
-  return jsonWithToast(
-    session,
-    { client: updatedClient },
-    { variant: "default", title: "Client updated", description: "Great job." },
-  );
+  return jsonWithToast(session, { client: updatedClient }, { variant: "default", title: "Client updated", description: "Great job." });
 };
 
 export default function ClientDetailsPage() {
@@ -93,12 +89,7 @@ export default function ClientDetailsPage() {
         />
       </PageHeader>
 
-      <ValidatedForm
-        validator={validator}
-        defaultValues={{ name: client.name }}
-        method="post"
-        className="max-w-md space-y-4"
-      >
+      <ValidatedForm validator={validator} defaultValues={{ name: client.name }} method="post" className="max-w-md space-y-4">
         <Input label="Name" id="name" name="name" required />
         <div className="flex items-center gap-2 ">
           <SubmitButton className="w-full" name="_action" value="update">
@@ -117,9 +108,7 @@ export default function ClientDetailsPage() {
           <UsersList users={client.users} />
         </div>
 
-        {client.leads.length > 0 && (
-          <LeadsTable leads={client.leads} showTitle />
-        )}
+        {client.leads.length > 0 && <LeadsTable leads={client.leads} showTitle />}
       </div>
     </>
   );
@@ -129,11 +118,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   if (error instanceof Error) {
-    return (
-      <p className="font-medium text-destructive">
-        An unexpected error occurred: {error.message}
-      </p>
-    );
+    return <p className="font-medium text-destructive">An unexpected error occurred: {error.message}</p>;
   }
 
   if (!isRouteErrorResponse(error)) {

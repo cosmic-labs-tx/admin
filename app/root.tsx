@@ -1,22 +1,13 @@
 import { type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Notifications } from "~/components/notifications";
 import { ThemeProvider } from "~/components/theme-provider";
-import { commitSession, getSession, getUser } from "~/session.server";
+import { commitSession, getSession, getUser } from "~/server/session.server";
+import { getGlobalToast } from "~/server/toast.server";
 import stylesheet from "~/tailwind.css";
-import { getGlobalToast } from "~/toast.server";
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
-];
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request);
@@ -30,7 +21,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
-    },
+    }
   );
 };
 
