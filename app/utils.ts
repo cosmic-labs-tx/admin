@@ -73,3 +73,12 @@ export function normalizeEnum(value: string) {
     })
     .join(" ");
 }
+
+export function getSearchParam(param: string, request: Request) {
+  const url = new URL(request.url);
+  return url.searchParams.get(param);
+}
+export function getAllSearchParams(param: string, request: Request) {
+  const url = new URL(request.url);
+  return url.searchParams.getAll(param);
+}

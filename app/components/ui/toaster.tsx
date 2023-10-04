@@ -1,6 +1,7 @@
 import { IconAlertCircleFilled, IconAlertTriangleFilled, IconCircleCheckFilled } from "@tabler/icons-react";
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "~/components/ui/toast";
 import { useToast } from "~/components/ui/use-toast";
+import { cn } from "~/lib/utils";
 
 export function Toaster() {
   const { toasts } = useToast();
@@ -10,7 +11,7 @@ export function Toaster() {
       {toasts.map(function ({ id, title, description, action, variant, ...props }) {
         return (
           <Toast key={id} variant={variant} {...props}>
-            <div className="flex items-center gap-4">
+            <div className={cn("flex gap-3", description ? "items-start" : "items-center")}>
               <div>
                 {variant === "default" ? (
                   <IconCircleCheckFilled className="h-6 w-6 text-success" />

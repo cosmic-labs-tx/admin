@@ -6,7 +6,7 @@ import { PageHeader } from "~/components/page-header";
 import { prisma } from "~/server/db.server";
 import { requireUserId } from "~/server/session.server";
 
-export const meta: MetaFunction = () => [{ title: "Leads • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Leads • Cosmic Labs" }];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUserId(request);

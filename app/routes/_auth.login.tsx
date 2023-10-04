@@ -18,7 +18,7 @@ const validator = withZod(
     password: z.string().min(8, { message: "Password must be 8 or more characters." }),
     remember: z.literal("on").optional(),
     redirectTo: z.string().optional(),
-  })
+  }),
 );
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -61,7 +61,7 @@ export default function LoginPage() {
     <div className="grid h-full place-items-center">
       <div className="max-w-lg px-8">
         <h1 className="text-4xl font-extrabold">Cosmic Labs Admin</h1>
-        <ValidatedForm validator={validator} method="post" className="mt-8 space-y-3">
+        <ValidatedForm validator={validator} method="post" className="mt-4 space-y-3">
           <Input label="Email" id="email" name="email" type="email" autoComplete="email" defaultValue="paul@remix.run" required />
           <Input label="Password" id="password" name="password" type="password" autoComplete="current-password" defaultValue="pauliscool" required />
 

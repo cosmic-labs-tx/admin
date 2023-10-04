@@ -1,6 +1,5 @@
 import type { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import type { MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { useState } from "react";
@@ -13,8 +12,9 @@ import { notFound, unauthorized } from "~/responses";
 import { prisma } from "~/server/db.server";
 import { deleteLead } from "~/server/lead.server";
 import { requireUser } from "~/server/session.server";
+import { toast } from "~/server/toast.server";
 
-export const meta: MetaFunction = () => [{ title: "Lead • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Lead • Cosmic Labs" }];
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const user = await requireUser(request);
@@ -46,7 +46,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
   }
 
   await deleteLead({ id: params.leadId });
-  return redirect("/leads");
+  return toast.redirect(request, "/leads", { variant: "default", title: "Lead deleted", description: "Hope you meant to do that." });
 };
 
 export default function LeadDetailsPage() {

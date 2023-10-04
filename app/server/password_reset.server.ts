@@ -1,5 +1,4 @@
 import type { PasswordReset, User } from "@prisma/client";
-import crypto from "crypto";
 import dayjs from "dayjs";
 import { prisma } from "~/server/db.server";
 
@@ -24,12 +23,15 @@ export function expirePasswordReset({ token }: { token: PasswordReset["token"] }
   });
 }
 
-export async function generatePasswordReset({ email }: { email: User["email"] }) {
+export function generatePasswordReset({ email }: { email: User["email"] }) {
   return prisma.passwordReset.create({
     data: {
-      token: crypto.randomBytes(32).toString("hex"),
       expiresAt: dayjs().add(15, "minute").toDate(),
       user: { connect: { email } },
     },
   });
+}
+
+export function deletePasswordReset({ token }: { token: PasswordReset["token"] }) {
+  return prisma.passwordReset.delete({ where: { token } });
 }

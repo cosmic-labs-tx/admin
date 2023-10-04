@@ -1,7 +1,7 @@
 import type { Session, TypedResponse } from "@remix-run/node";
 import { redirect, typedjson } from "remix-typedjson";
 import type { Toast } from "~/components/ui/use-toast";
-import { commitSession } from "~/server/session.server";
+import { commitSession, getSession } from "~/server/session.server";
 
 export function setGlobalToast(session: Session, toast: Toast) {
   session.flash("globalMessage", toast);
@@ -11,8 +11,13 @@ export function getGlobalToast(session: Session): Toast | null {
   return (session.get("globalMessage") as Toast) || null;
 }
 
-export async function redirectWithToast(
-  session: Session,
+export const toast = {
+  redirect: redirectWithToast,
+  json: jsonWithToast,
+};
+
+async function redirectWithToast(
+  request: Request,
   url: string,
   toast: Toast = {
     title: "Success",
@@ -21,6 +26,7 @@ export async function redirectWithToast(
   },
   init: ResponseInit = {},
 ) {
+  const session = await getSession(request);
   setGlobalToast(session, toast);
   return redirect(url, {
     ...init,
@@ -28,8 +34,8 @@ export async function redirectWithToast(
   });
 }
 
-export async function jsonWithToast<Data>(
-  session: Session,
+async function jsonWithToast<Data>(
+  request: Request,
   data: Data,
   toast: Toast = {
     title: "Success",
@@ -38,6 +44,7 @@ export async function jsonWithToast<Data>(
   },
   init: ResponseInit = {},
 ): Promise<TypedResponse<Data>> {
+  const session = await getSession(request);
   setGlobalToast(session, toast);
   return typedjson(data, {
     ...init,

@@ -21,10 +21,10 @@ const validator = withZod(
     email: z.string().email({ message: "Invalid email address" }),
     role: z.nativeEnum(Role),
     clientId: z.string().optional(),
-  })
+  }),
 );
 
-export const meta: MetaFunction = () => [{ title: "New User • FBL" }];
+export const meta: MetaFunction = () => [{ title: "New User • Cosmic Labs" }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);

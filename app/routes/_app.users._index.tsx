@@ -7,7 +7,7 @@ import { UsersTable } from "~/components/users/users-table";
 import { prisma } from "~/server/db.server";
 import { requireUser } from "~/server/session.server";
 
-export const meta: MetaFunction = () => [{ title: "Users • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Users • Cosmic Labs" }];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request, ["SUPER_ADMIN"]);

@@ -14,10 +14,10 @@ import { requireUser } from "~/server/session.server";
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
-  })
+  }),
 );
 
-export const meta: MetaFunction = () => [{ title: "New Client • FBL" }];
+export const meta: MetaFunction = () => [{ title: "New Client • Cosmic Labs" }];
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);

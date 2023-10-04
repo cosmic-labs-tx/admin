@@ -18,17 +18,17 @@ import { SubmitButton } from "~/components/ui/submit-button";
 import { UsersList } from "~/components/users/users-list";
 import { notFound } from "~/responses";
 import { prisma } from "~/server/db.server";
-import { getSession, requireUser } from "~/server/session.server";
-import { jsonWithToast } from "~/server/toast.server";
+import { requireUser } from "~/server/session.server";
+import { toast } from "~/server/toast.server";
 
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
     _action: z.enum(["delete", "update"]),
-  })
+  }),
 );
 
-export const meta: MetaFunction = () => [{ title: "Client • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Client • Cosmic Labs" }];
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUser(request, ["SUPER_ADMIN"]);
@@ -45,7 +45,6 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
-  const session = await getSession(request);
   await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) {
@@ -71,7 +70,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
     data: { name },
   });
 
-  return jsonWithToast(session, { client: updatedClient }, { variant: "default", title: "Client updated", description: "Great job." });
+  return toast.json(request, { client: updatedClient }, { variant: "default", title: "Client updated", description: "Great job." });
 };
 
 export default function ClientDetailsPage() {
@@ -80,7 +79,7 @@ export default function ClientDetailsPage() {
 
   return (
     <>
-      <PageHeader title={client.name}>
+      <PageHeader title={client.name} description={client.id}>
         <ConfirmDestructiveModal
           open={modalOpen}
           onOpenChange={setModalOpen}

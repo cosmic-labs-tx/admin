@@ -2,7 +2,7 @@ import { json, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/nod
 import { PageHeader } from "~/components/page-header";
 import { requireUserId } from "~/server/session.server";
 
-export const meta: MetaFunction = () => [{ title: "Dashboard • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Dashboard • Cosmic Labs" }];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUserId(request);

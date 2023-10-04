@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://getcosmic.dev/sitemap-index.xml

@@ -6,6 +6,7 @@ import { validationError } from "remix-validated-form";
 import { z } from "zod";
 
 import { prisma } from "~/server/db.server";
+import { sendLeadCreationEmail } from "~/server/mail.server";
 
 const validator = withZod(
   z.object({
@@ -40,8 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     // Cloudflare Turnstile
     try {
-      console.log(token);
-      const turnstileRequest = getTurnstileRequest(request, token);
+      const turnstileRequest = createTurnstileRequest(request, token);
       const turnstile = await fetch(turnstileRequest);
       const outcome = await turnstile.json();
       if (!outcome.success) {
@@ -53,7 +53,12 @@ export async function action({ request }: ActionFunctionArgs) {
       return cors(request, json({ message: `Cloudflare Turnstile failed` }, { status: 400 }));
     }
 
-    const client = await prisma.client.findUnique({ where: { id: clientId } });
+    const client = await prisma.client.findUnique({
+      where: { id: clientId },
+      include: {
+        users: true,
+      },
+    });
     if (!client) {
       return cors(request, json({ message: `Client not found` }, { status: 404 }));
     }
@@ -76,6 +81,8 @@ export async function action({ request }: ActionFunctionArgs) {
         additionalFields,
       },
     });
+
+    await sendLeadCreationEmail({ emails: client.users.map((user) => user.email), data: lead });
     return cors(request, json({ message: "Lead created", lead }, { status: 201 }));
   } catch (e) {
     console.log(e);
@@ -86,7 +93,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-function getTurnstileRequest(request: Request, token: string) {
+function createTurnstileRequest(request: Request, token: string) {
   const { CF_SECRET_KEY } = process.env;
   if (!CF_SECRET_KEY) {
     throw new Error("CF_SECRET_KEY is required");

@@ -2,7 +2,7 @@ import { Role } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import type { MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import { isRouteErrorResponse, useFetcher, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -17,8 +17,8 @@ import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
 import { notFound } from "~/responses";
 import { prisma } from "~/server/db.server";
-import { getSession, requireUser } from "~/server/session.server";
-import { jsonWithToast } from "~/server/toast.server";
+import { requireUser } from "~/server/session.server";
+import { toast } from "~/server/toast.server";
 
 const validator = withZod(
   z.object({
@@ -28,7 +28,13 @@ const validator = withZod(
     role: z.nativeEnum(Role),
     clientId: z.string().optional(),
     _action: z.enum(["delete", "update"]),
-  })
+  }),
+);
+
+const passwordResetValidator = withZod(
+  z.object({
+    email: z.string().email({ message: "Invalid email address" }),
+  }),
 );
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -45,10 +51,9 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   return typedjson({ user, clients });
 };
 
-export const meta: MetaFunction = () => [{ title: "User • FBL" }];
+export const meta: MetaFunction = () => [{ title: "User • Cosmic Labs" }];
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
-  const session = await getSession(request);
   await requireUser(request, ["SUPER_ADMIN"]);
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
@@ -71,22 +76,29 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
     data: rest,
   });
 
-  return jsonWithToast(session, { user: updatedUser }, { variant: "default", title: "User updated", description: "Great job." });
+  return toast.json(request, { user: updatedUser }, { variant: "default", title: "User updated", description: "Great job." });
 };
 
 export default function UserDetailsPage() {
   const { user, clients } = useTypedLoaderData<typeof loader>();
   const [modalOpen, setModalOpen] = useState(false);
+  const fetcher = useFetcher();
 
   return (
     <>
-      <PageHeader title={`${user.firstName}${user.lastName ? " " + user.lastName : ""}`}>
-        <ConfirmDestructiveModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          description="This action cannot be undone. This will permanently delete the
+      <PageHeader title={`${user.firstName}${user.lastName ? " " + user.lastName : ""}`} description={user.id}>
+        <div className="flex items-center gap-2">
+          <ValidatedForm fetcher={fetcher} validator={passwordResetValidator} method="POST" action="/reset-password">
+            <input type="hidden" name="email" value={user.email} />
+            <SubmitButton variant="outline">Send Password Reset</SubmitButton>
+          </ValidatedForm>
+          <ConfirmDestructiveModal
+            open={modalOpen}
+            onOpenChange={setModalOpen}
+            description="This action cannot be undone. This will permanently delete the
                   user and remove the data from the server."
-        />
+          />
+        </div>
       </PageHeader>
 
       <ValidatedForm

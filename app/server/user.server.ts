@@ -31,6 +31,28 @@ export async function createUser(data: Prisma.UserUncheckedCreateInput & { passw
   });
 }
 
+export async function resetUserPassword({ userId, password }: { userId: User["id"]; password: string }) {
+  const hash = await bcrypt.hash(password, 10);
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      password: { update: { hash } },
+    },
+  });
+}
+
+export async function setupUserPassword({ userId, password }: { userId: User["id"]; password: string }) {
+  const hash = await bcrypt.hash(password, 10);
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      password: {
+        create: { hash },
+      },
+    },
+  });
+}
+
 export async function deleteUserByEmail(email: User["email"]) {
   return prisma.user.delete({ where: { email } });
 }

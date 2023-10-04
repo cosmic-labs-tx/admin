@@ -20,7 +20,7 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
-export function ThemeProvider({ children, defaultTheme = "system", storageKey = "fbl-theme", ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = "system", storageKey = "cosmic-theme", ...props }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>("system");
 
   useEffect(() => {

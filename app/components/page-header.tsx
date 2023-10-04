@@ -1,13 +1,21 @@
-type Props = {
+import type { ComponentPropsWithoutRef } from "react";
+import { cn } from "~/lib/utils";
+
+interface Props extends ComponentPropsWithoutRef<"header"> {
   title: string;
+  description?: string;
   children?: React.ReactNode;
-};
+}
 
 export function PageHeader(props: Props) {
+  const { className, description, ...rest } = props;
   return (
-    <header className="mb-12 flex w-full items-center justify-between">
-      <h1 className="text-4xl font-black">{props.title}</h1>
-      {props.children}
-    </header>
+    <>
+      <header className={cn(description ? "mb-1" : "mb-12", "flex w-full items-center justify-between", props.className)} {...rest}>
+        <h1 className="text-4xl font-black">{props.title}</h1>
+        {props.children}
+      </header>
+      {description && <p className="mb-12 text-sm text-muted-foreground">{description}</p>}
+    </>
   );
 }

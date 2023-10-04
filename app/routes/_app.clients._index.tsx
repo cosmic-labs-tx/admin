@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { prisma } from "~/server/db.server";
 import { requireUser } from "~/server/session.server";
 
-export const meta: MetaFunction = () => [{ title: "Clients • FBL" }];
+export const meta: MetaFunction = () => [{ title: "Clients • Cosmic Labs" }];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request, ["SUPER_ADMIN"]);
