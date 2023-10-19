@@ -68,7 +68,7 @@ export function DesktopNav(props: ComponentPropsWithoutRef<"nav">) {
               {user.firstName}
               {user.lastName && ` ${user.lastName}`}
             </div>
-            <div className="text-xs text-muted-foreground">{user.email}</div>
+            <div className="max-w-[150px] truncate text-xs text-muted-foreground">{user.email}</div>
           </div>
         </Link>
         <div className="flex gap-2">
