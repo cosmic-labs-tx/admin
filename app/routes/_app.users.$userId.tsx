@@ -6,7 +6,7 @@ import { isRouteErrorResponse, useFetcher, useRouteError } from "@remix-run/reac
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { ValidatedForm, validationError } from "remix-validated-form";
+import { ValidatedForm, setFormDefaults, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
@@ -49,7 +49,11 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const clients = await prisma.client.findMany();
   if (!user) throw notFound({ message: "User not found" });
 
-  return typedjson({ user, clients });
+  return typedjson({
+    user,
+    clients,
+    ...setFormDefaults("userForm", { ...user }),
+  });
 };
 
 export const meta: MetaFunction = () => [{ title: "User • Cosmic Labs" }];
@@ -102,18 +106,7 @@ export default function UserDetailsPage() {
         </div>
       </PageHeader>
 
-      <ValidatedForm
-        validator={validator}
-        defaultValues={{
-          firstName: user.firstName,
-          email: user.email,
-          lastName: user.lastName ?? "",
-          clientId: user.clientId ?? "",
-          role: user.role,
-        }}
-        method="post"
-        className="space-y-4 sm:max-w-md"
-      >
+      <ValidatedForm id="userForm" validator={validator} method="post" className="space-y-4 sm:max-w-md">
         <Input label="First name" id="firstName" name="firstName" required />
         <Input label="Last name" id="lastName" name="lastName" />
         <Input label="Email" id="email" name="email" />

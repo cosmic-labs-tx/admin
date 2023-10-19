@@ -5,7 +5,7 @@ import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { ValidatedForm, validationError } from "remix-validated-form";
+import { ValidatedForm, setFormDefaults, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { LeadsTable } from "~/components/leads/leads-table";
@@ -42,7 +42,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
   if (!client) throw notFound({ message: "Client not found" });
 
-  return typedjson({ client });
+  return typedjson({
+    client,
+    ...setFormDefaults("clientForm", { ...client }),
+  });
 };
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
@@ -89,7 +92,7 @@ export default function ClientDetailsPage() {
         />
       </PageHeader>
 
-      <ValidatedForm validator={validator} defaultValues={{ name: client.name }} method="post" className="space-y-4 sm:max-w-md">
+      <ValidatedForm id="clientForm" validator={validator} method="post" className="space-y-4 sm:max-w-md">
         <Input label="Name" id="name" name="name" required />
         <ButtonGroup>
           <SubmitButton className="w-full" name="_action" value="update">

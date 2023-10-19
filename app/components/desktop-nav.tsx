@@ -30,7 +30,7 @@ export function DesktopNav(props: ComponentPropsWithoutRef<"nav">) {
   const showSpinner = useSpinDelay(navigation.state !== "idle");
 
   return (
-    <nav className={cn("hidden h-full shrink-0 grow-0 basis-56 flex-col space-x-2 border-r border-border bg-background px-6 py-10 sm:flex", props.className)}>
+    <nav className={cn("hidden h-full shrink-0 grow-0 basis-64 flex-col space-x-2 border-r border-border bg-background px-6 py-10 sm:flex", props.className)}>
       <div className="pl-3">
         <Link to="/leads" className="inline-flex items-center space-x-2">
           <Avatar className="h-14 w-14">

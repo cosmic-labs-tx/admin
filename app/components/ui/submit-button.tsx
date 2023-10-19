@@ -1,15 +1,16 @@
 import { IconLoader } from "@tabler/icons-react";
-import { useIsSubmitting } from "remix-validated-form";
+import { useFormContext, useIsSubmitting } from "remix-validated-form";
 import type { ButtonProps } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 
 export function SubmitButton(props: ButtonProps) {
   const isSubmitting = useIsSubmitting();
-  const isDisabled = props.disabled || isSubmitting;
+  const { touchedFields } = useFormContext();
+  const isDisabled = props.disabled || isSubmitting || !Object.keys(touchedFields).length;
 
   return (
     <Button {...props} type="submit" disabled={isDisabled}>
-      {isDisabled && <IconLoader className="mr-2 h-4 w-4 animate-spin" />}
+      {isSubmitting && <IconLoader className="mr-2 h-4 w-4 animate-spin" />}
       {props.children}
     </Button>
   );
