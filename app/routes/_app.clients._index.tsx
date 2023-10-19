@@ -22,7 +22,7 @@ export default function ClientIndexPage() {
   return (
     <>
       <PageHeader title="Clients">
-        <Button asChild>
+        <Button asChild className="w-min">
           <Link to="/clients/new">New Client</Link>
         </Button>
       </PageHeader>

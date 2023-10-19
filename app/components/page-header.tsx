@@ -11,7 +11,7 @@ export function PageHeader(props: Props) {
   const { className, description, ...rest } = props;
   return (
     <>
-      <header className={cn(description ? "mb-1" : "mb-12", "flex w-full items-center justify-between", props.className)} {...rest}>
+      <header className={cn(description ? "mb-1" : "mb-12", "flex w-full flex-wrap items-center justify-between gap-3", props.className)} {...rest}>
         <h1 className="text-4xl font-black">{props.title}</h1>
         {props.children}
       </header>

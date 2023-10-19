@@ -12,6 +12,7 @@ import { LeadsTable } from "~/components/leads/leads-table";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
 import { PageHeader } from "~/components/page-header";
 import { Button } from "~/components/ui/button";
+import { ButtonGroup } from "~/components/ui/button-group";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { SubmitButton } from "~/components/ui/submit-button";
@@ -88,16 +89,16 @@ export default function ClientDetailsPage() {
         />
       </PageHeader>
 
-      <ValidatedForm validator={validator} defaultValues={{ name: client.name }} method="post" className="max-w-md space-y-4">
+      <ValidatedForm validator={validator} defaultValues={{ name: client.name }} method="post" className="space-y-4 sm:max-w-md">
         <Input label="Name" id="name" name="name" required />
-        <div className="flex items-center gap-2 ">
+        <ButtonGroup>
           <SubmitButton className="w-full" name="_action" value="update">
             Save Client
           </SubmitButton>
           <Button type="reset" variant="outline">
             Reset
           </Button>
-        </div>
+        </ButtonGroup>
       </ValidatedForm>
 
       <Separator className="my-12" />

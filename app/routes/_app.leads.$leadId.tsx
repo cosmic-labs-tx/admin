@@ -101,7 +101,7 @@ export default function LeadDetailsPage() {
 
 function DetailItem({ label, value }: { label: string; value: Prisma.JsonValue }) {
   return (
-    <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+    <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
       <dt className="text-sm font-semibold capitalize">{label}</dt>
       <dd className={cn("mt-1 text-sm sm:col-span-2 sm:mt-0", value ? "" : "text-muted-foreground")}>{String(value)}</dd>
     </div>

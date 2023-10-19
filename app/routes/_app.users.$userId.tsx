@@ -12,6 +12,7 @@ import { z } from "zod";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
 import { PageHeader } from "~/components/page-header";
 import { Button } from "~/components/ui/button";
+import { ButtonGroup } from "~/components/ui/button-group";
 import { Input } from "~/components/ui/input";
 import { Select } from "~/components/ui/select";
 import { SubmitButton } from "~/components/ui/submit-button";
@@ -111,7 +112,7 @@ export default function UserDetailsPage() {
           role: user.role,
         }}
         method="post"
-        className="max-w-md space-y-4"
+        className="space-y-4 sm:max-w-md"
       >
         <Input label="First name" id="firstName" name="firstName" required />
         <Input label="Last name" id="lastName" name="lastName" />
@@ -126,14 +127,14 @@ export default function UserDetailsPage() {
           }))}
         />
         <Select name="clientId" label="Client" placeholder="Select a client" options={clients.map((c) => ({ value: c.id, label: c.name }))} />
-        <div className="flex items-center gap-2">
+        <ButtonGroup>
           <SubmitButton className="w-full" name="_action" value="update">
             Save User
           </SubmitButton>
           <Button type="reset" variant="outline">
             Reset
           </Button>
-        </div>
+        </ButtonGroup>
       </ValidatedForm>
     </>
   );

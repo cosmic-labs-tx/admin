@@ -47,7 +47,7 @@ export default function NewUserPage() {
     <>
       <PageHeader title="New User" />
 
-      <ValidatedForm validator={validator} method="post" className="max-w-md space-y-4">
+      <ValidatedForm validator={validator} method="post" className="space-y-4 sm:max-w-md">
         <Input label="First name" id="firstName" name="firstName" required />
         <Input label="Last name" id="lastName" name="lastName" />
         <Input label="Email" id="email" name="email" />

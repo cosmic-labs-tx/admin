@@ -62,8 +62,8 @@ export default function LoginPage() {
       <div className="max-w-lg px-8">
         <h1 className="text-4xl font-extrabold">Cosmic Labs Admin</h1>
         <ValidatedForm validator={validator} method="post" className="mt-4 space-y-3">
-          <Input label="Email" id="email" name="email" type="email" autoComplete="email" defaultValue="paul@remix.run" required />
-          <Input label="Password" id="password" name="password" type="password" autoComplete="current-password" defaultValue="pauliscool" required />
+          <Input label="Email" id="email" name="email" type="email" autoComplete="email" required />
+          <Input label="Password" id="password" name="password" type="password" autoComplete="current-password" required />
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <div className="flex items-center justify-between">

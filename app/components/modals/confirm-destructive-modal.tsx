@@ -6,7 +6,7 @@ export function ConfirmDestructiveModal({ open, onOpenChange, description }: { o
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="destructive" type="submit" name="_action" value="delete">
+        <Button variant="destructive" type="submit" name="_action" value="delete" className="w-min">
           Delete
         </Button>
       </DialogTrigger>
