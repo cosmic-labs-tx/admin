@@ -82,3 +82,13 @@ export function getAllSearchParams(param: string, request: Request) {
   const url = new URL(request.url);
   return url.searchParams.getAll(param);
 }
+
+export function formatCurrency(number: number, options: Intl.NumberFormatOptions = {}) {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    ...options,
+  });
+
+  return formatter.format(number);
+}

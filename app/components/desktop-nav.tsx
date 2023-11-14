@@ -1,12 +1,11 @@
 import type { Role } from "@prisma/client";
 import { Form, Link, NavLink, useNavigation } from "@remix-run/react";
-import { IconLoader } from "@tabler/icons-react";
+import { IconLoader, IconMailbox, IconRocket, IconUsers } from "@tabler/icons-react";
 import type { ComponentPropsWithoutRef } from "react";
 import { useSpinDelay } from "spin-delay";
 import { ThemeModeToggle } from "~/components/theme-mode-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";
 import { useUser } from "~/utils";
 
@@ -14,14 +13,16 @@ export const links: ReadonlyArray<{
   name: string;
   href: string;
   access: ReadonlyArray<Role>;
+  icon: JSX.Element;
 }> = [
   {
     name: "Leads",
     href: "/leads",
     access: ["SUPER_ADMIN", "CLIENT_USER", "CLIENT_ADMIN"],
+    icon: <IconMailbox className="h-5 w-5" />,
   },
-  { name: "Clients", href: "/clients", access: ["SUPER_ADMIN"] },
-  { name: "Users", href: "/users", access: ["SUPER_ADMIN"] },
+  { name: "Clients", href: "/clients", access: ["SUPER_ADMIN"], icon: <IconRocket className="h-5 w-5" /> },
+  { name: "Users", href: "/users", access: ["SUPER_ADMIN"], icon: <IconUsers className="h-5 w-5" /> },
 ] as const;
 
 export function DesktopNav(props: ComponentPropsWithoutRef<"nav">) {
@@ -30,7 +31,7 @@ export function DesktopNav(props: ComponentPropsWithoutRef<"nav">) {
   const showSpinner = useSpinDelay(navigation.state !== "idle");
 
   return (
-    <nav className={cn("hidden h-full shrink-0 grow-0 basis-64 flex-col space-x-2 border-r border-border bg-background px-6 py-10 sm:flex", props.className)}>
+    <nav className={cn("hidden h-full shrink-0 grow-0 basis-64 flex-col space-x-2 border-r border-border bg-background px-3 py-10 sm:flex", props.className)}>
       <div className="pl-3">
         <Link to="/leads" className="inline-flex items-center space-x-2">
           <Avatar className="h-14 w-14">
@@ -46,15 +47,18 @@ export function DesktopNav(props: ComponentPropsWithoutRef<"nav">) {
           .map((link) => {
             return (
               <li key={link.href}>
-                <NavLink to={link.href} className={({ isActive }) => cn("flex items-center rounded-md px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary", isActive && "bg-secondary")}>
-                  {link.name}
+                <NavLink
+                  to={link.href}
+                  className={({ isActive }) => cn("flex items-center gap-x-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary", isActive && "bg-secondary text-primary")}
+                >
+                  {link.icon}
+                  <span>{link.name}</span>
                 </NavLink>
               </li>
             );
           })}
       </ul>
-      <Separator className="mb-8 mt-auto" />
-      <div className="space-y-4">
+      <div className="mt-auto space-y-4">
         <Link to={`/users/${user.id}`} className="flex gap-2">
           <Avatar>
             <AvatarImage src="https://github.com/paulhmorris.png" alt="@paulhmorris" />

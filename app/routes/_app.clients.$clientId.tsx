@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import type { MetaFunction } from "@remix-run/react";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import { Link, isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -16,15 +16,19 @@ import { ButtonGroup } from "~/components/ui/button-group";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { SubmitButton } from "~/components/ui/submit-button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { UsersList } from "~/components/users/users-list";
 import { notFound } from "~/responses";
 import { prisma } from "~/server/db.server";
 import { requireUser } from "~/server/session.server";
+import { stripe } from "~/server/stripe.server";
 import { toast } from "~/server/toast.server";
+import { formatCurrency } from "~/utils";
 
 const validator = withZod(
   z.object({
     name: z.string().min(1, { message: "Name is required" }),
+    stripeCustomerId: z.string().startsWith("cus_").optional(),
     _action: z.enum(["delete", "update"]),
   }),
 );
@@ -42,8 +46,11 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
   if (!client) throw notFound({ message: "Client not found" });
 
+  const stripeCharges = client?.stripeCustomerId ? await stripe.charges.list({ customer: client.stripeCustomerId }) : null;
+
   return typedjson({
     client,
+    stripeCharges,
     ...setFormDefaults("clientForm", { ...client }),
   });
 };
@@ -54,16 +61,8 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
   if (result.error) {
     return json(validationError(result.error), { status: 400 });
   }
-  const { _action, name } = result.data;
 
-  const client = await prisma.client.findUnique({
-    where: { id: params.clientId },
-  });
-
-  if (!client) {
-    throw notFound({ message: "Client not found" });
-  }
-
+  const { _action, ...rest } = result.data;
   if (_action === "delete") {
     await prisma.client.delete({ where: { id: params.clientId } });
     return redirect("/clients");
@@ -71,14 +70,14 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 
   const updatedClient = await prisma.client.update({
     where: { id: params.clientId },
-    data: { name },
+    data: rest,
   });
 
   return toast.json(request, { client: updatedClient }, { variant: "default", title: "Client updated", description: "Great job." });
 };
 
 export default function ClientDetailsPage() {
-  const { client } = useTypedLoaderData<typeof loader>();
+  const { client, stripeCharges } = useTypedLoaderData<typeof loader>();
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -94,6 +93,7 @@ export default function ClientDetailsPage() {
 
       <ValidatedForm id="clientForm" validator={validator} method="post" className="space-y-4 sm:max-w-md">
         <Input label="Name" id="name" name="name" required />
+        <Input label="Stripe Customer ID" id="stripeCustomerId" name="stripeCustomerId" required />
         <ButtonGroup>
           <SubmitButton className="w-full" name="_action" value="update">
             Save Client
@@ -110,6 +110,42 @@ export default function ClientDetailsPage() {
         <div className="max-w-sm">
           <UsersList users={client.users} />
         </div>
+
+        {stripeCharges && stripeCharges.data.length > 0 && (
+          <div>
+            <h2 className="mb-2">Charges</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Created</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stripeCharges.data.map((charge) => {
+                  return (
+                    <TableRow key={charge.id}>
+                      <TableCell>{new Date(charge.created).toLocaleString()}</TableCell>
+                      <TableCell>{formatCurrency(charge.amount / 100)}</TableCell>
+                      <TableCell>{charge.description}</TableCell>
+                      {charge.receipt_url && (
+                        <TableCell>
+                          <Button variant="link" asChild>
+                            <Link target="_blank" to={charge.receipt_url}>
+                              View Receipt
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
         {client.leads.length > 0 && <LeadsTable leads={client.leads} showTitle />}
       </div>

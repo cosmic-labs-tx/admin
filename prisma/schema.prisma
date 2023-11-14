@@ -65,10 +65,11 @@ model Lead {
 }
 
 model Client {
-  id    String @id @default(cuid())
-  name  String @unique
-  leads Lead[]
-  users User[]
+  id               String  @id @default(cuid())
+  name             String  @unique
+  leads            Lead[]
+  users            User[]
+  stripeCustomerId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
