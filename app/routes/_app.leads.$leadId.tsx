@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import type { MetaFunction } from "@remix-run/react";
 import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
@@ -7,7 +6,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { ConfirmDestructiveModal } from "~/components/modals/confirm-destructive-modal";
 import { PageHeader } from "~/components/page-header";
-import { cn } from "~/lib/utils";
+import { DetailItem, DetailsList } from "~/components/ui/details";
 import { notFound, unauthorized } from "~/responses";
 import { prisma } from "~/server/db.server";
 import { deleteLead } from "~/server/lead.server";
@@ -53,6 +52,13 @@ export default function LeadDetailsPage() {
   const { lead } = useTypedLoaderData<typeof loader>();
   const [modalOpen, setModalOpen] = useState(false);
 
+  const details = {
+    name: lead.name,
+    email: lead.email,
+    created: new Date(lead.createdAt).toLocaleString(),
+    message: lead.message,
+  };
+
   return (
     <>
       <div className="flex justify-between">
@@ -70,17 +76,13 @@ export default function LeadDetailsPage() {
         <h2>Form Data</h2>
         <p className="max-w-2xl text-sm leading-6 text-muted-foreground">If you don't see data from a field, it means the user didn't fill it in.</p>
       </div>
-      <dl className="divide-y divide-muted">
-        <DetailItem label="Name" value={lead.name} />
-        <DetailItem label="Email" value={lead.email} />
-        <DetailItem label="Created" value={new Date(lead.createdAt).toLocaleString()} />
-        <DetailItem label="Message" value={lead.message} />
+      <DetailsList list={details}>
         {lead.additionalFields &&
           Object.entries(lead.additionalFields).map(([label, value]) => {
             if (!label || !value) return null;
             return <DetailItem key={label} label={label} value={value} />;
           })}
-      </dl>
+      </DetailsList>
 
       {lead.meta && (
         <>
@@ -88,23 +90,10 @@ export default function LeadDetailsPage() {
             <h3 className="text-base font-semibold leading-7 text-secondary-foreground">Meta Information</h3>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">Automatically gathered from the user's device at the time they submitted.</p>
           </div>
-          <dl className="divide-y divide-muted">
-            {Object.entries(lead.meta).map(([key, value]) => (
-              <DetailItem key={key} label={key} value={String(value)} />
-            ))}
-          </dl>
+          <DetailsList list={lead.meta as Record<string, unknown>} />
         </>
       )}
     </>
-  );
-}
-
-function DetailItem({ label, value }: { label: string; value: Prisma.JsonValue }) {
-  return (
-    <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-      <dt className="text-sm font-semibold capitalize">{label}</dt>
-      <dd className={cn("mt-1 text-sm sm:col-span-2 sm:mt-0", value ? "" : "text-muted-foreground")}>{String(value)}</dd>
-    </div>
   );
 }
 

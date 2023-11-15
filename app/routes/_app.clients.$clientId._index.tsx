@@ -7,7 +7,7 @@ import { ChargesTable } from "~/components/clients/charges-table";
 import { LeadsTable } from "~/components/leads/leads-table";
 import { PageHeader } from "~/components/page-header";
 import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
+import { DetailsList } from "~/components/ui/details";
 import { UsersList } from "~/components/users/users-list";
 import { notFound } from "~/responses";
 import { prisma } from "~/server/db.server";
@@ -35,17 +35,22 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 export default function ClientDetailsPage() {
   const { client, stripeCharges } = useTypedLoaderData<typeof loader>();
 
+  const details = {
+    id: client.id,
+    name: client.name,
+    "Stripe Customer ID": client.stripeCustomerId,
+  };
+
   return (
     <>
-      <PageHeader title={client.name} description={client.id}>
+      <PageHeader title={client.name}>
         <Button variant="outline" asChild className="ml-auto">
           <Link to={`/clients/${client.id}/edit`}>Edit</Link>
         </Button>
       </PageHeader>
 
-      <Separator className="my-12" />
-
       <div className="space-y-12">
+        <DetailsList list={details} />
         {client.users.length > 0 && <UsersList users={client.users} />}
         {stripeCharges && stripeCharges.data.length > 0 && <ChargesTable {...stripeCharges} />}
         {client.leads.length > 0 && <LeadsTable leads={client.leads} showTitle />}
