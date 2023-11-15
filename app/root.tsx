@@ -1,3 +1,4 @@
+import { cssBundleHref } from "@remix-run/css-bundle";
 import { type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -7,7 +8,11 @@ import { commitSession, getSession, getUser } from "~/server/session.server";
 import { getGlobalToast } from "~/server/toast.server";
 import stylesheet from "~/tailwind.css";
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }];
+// prettier-ignore
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : [])
+];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request);
@@ -21,7 +26,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
-    }
+    },
   );
 };
 

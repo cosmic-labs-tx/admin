@@ -7,7 +7,7 @@ function UsersList({ users }: { users: User[] }) {
   return (
     <div>
       <h2 className="mb-2">Users</h2>
-      <ul>
+      <ul className="max-w-sm">
         {users.map((user) => (
           <li key={user.id}>
             <UserCard {...user} />

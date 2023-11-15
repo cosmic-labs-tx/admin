@@ -36,11 +36,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await verifyLogin(email, password);
 
   if (!user) {
-    return validationError({
-      fieldErrors: {
-        email: "Email or password is incorrect",
+    return validationError(
+      {
+        fieldErrors: {
+          email: "Email or password is incorrect",
+        },
       },
-    });
+      result.data,
+    );
   }
 
   return createUserSession({
