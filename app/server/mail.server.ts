@@ -1,8 +1,11 @@
+import type { SendEmailCommandInput } from "@aws-sdk/client-sesv2";
+import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 import type { Lead, PasswordReset, User } from "@prisma/client";
-import { randomUUID } from "crypto";
+import { nanoid } from "nanoid";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const client = new SESv2Client({ region: "us-east-1" });
 
 export async function sendPasswordResetEmail({ email, token }: { email: User["email"]; token: PasswordReset["token"] }) {
   if (!process.env.ADMIN_URL) throw new Error("ADMIN_URL is not set");
@@ -31,11 +34,10 @@ export async function sendPasswordResetEmail({ email, token }: { email: User["em
 
 export async function sendLeadCreationEmail({ emails, data }: { emails: string | string[]; data: Lead }) {
   if (!process.env.ADMIN_URL) throw new Error("ADMIN_URL is not set");
-  const uuid = randomUUID();
   const fieldsToIgnore = ["cf-turnstile-response", "meta", "id", "updatedAt", "clientId"];
 
   try {
-    const email = await resend.sendEmail({
+    const email = await sendEmail({
       from: "Cosmic Labs <no-reply@getcosmic.dev>",
       to: emails,
       subject: "New Lead",
@@ -65,12 +67,46 @@ export async function sendLeadCreationEmail({ emails, data }: { emails: string |
           </ul>
         </ul>
       `,
-      headers: {
-        "X-Entity-Ref-ID": uuid,
-      },
     });
     return { data: email };
   } catch (error) {
     return { error };
   }
+}
+
+type SendEmailInput = {
+  from: string;
+  to: string | string[];
+  subject: string;
+  html: string;
+};
+function sendEmail(props: SendEmailInput) {
+  const input: SendEmailCommandInput = {
+    FromEmailAddress: props.from,
+    Destination: {
+      ToAddresses: [...props.to],
+    },
+    Content: {
+      Simple: {
+        Subject: {
+          Charset: "UTF-8",
+          Data: props.subject,
+        },
+        Body: {
+          Html: {
+            Charset: "UTF-8",
+            Data: props.html,
+          },
+        },
+        Headers: [
+          {
+            Name: "X-Entity-Ref-ID",
+            Value: nanoid(),
+          },
+        ],
+      },
+    },
+  };
+  const command = new SendEmailCommand(input);
+  return client.send(command);
 }
