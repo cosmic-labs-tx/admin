@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     });
     if (!client) {
-      return cors(request, json({ message: `Client not found` }, { status: 404 }));
+      return cors(request, json({ message: `Client not found` }, { status: 400 }));
     }
 
     // Additional fields
@@ -82,8 +82,8 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     });
 
-    await sendLeadCreationEmail({ emails: client.users.map((user) => user.email), data: lead });
-    return cors(request, json({ message: "Lead created", lead }, { status: 201 }));
+    const messageId = await sendLeadCreationEmail({ emails: client.users.map((user) => user.email), data: lead });
+    return cors(request, json({ message: "Lead created", lead, email_success: messageId.data?.MessageId ? true : false }, { status: 201 }));
   } catch (e) {
     console.log(e);
     if (e instanceof Error) {

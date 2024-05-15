@@ -70,6 +70,7 @@ export async function sendLeadCreationEmail({ emails, data }: { emails: string |
     });
     return { data: email };
   } catch (error) {
+    console.error(error);
     return { error };
   }
 }
