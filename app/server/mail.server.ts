@@ -85,7 +85,7 @@ function sendEmail(props: SendEmailInput) {
   const input: SendEmailCommandInput = {
     FromEmailAddress: props.from,
     Destination: {
-      ToAddresses: [...props.to],
+      ToAddresses: Array.isArray(props.to) ? props.to : [props.to],
     },
     Content: {
       Simple: {
